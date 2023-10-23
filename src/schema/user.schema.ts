@@ -29,33 +29,24 @@ export const createUserSchema = object({
             invalid_type_error: "invalid Name ",
         }),
         dateOfBirth: coerce.date({
-            required_error: "Date of birth is required",
             invalid_type_error: "invalid Date of birth",
         }).min(new Date("1930-01-01"), {message: "Age too old"})
-        .max(new Date(), {message: "Too young"}),
+        .max(new Date(), {message: "Too young"}).optional(),
         gender: string({
-            required_error: "Gender is required",
             invalid_type_error: "Enter a valid gender",
-        }),
+        }).optional(),
         image: string({
            invalid_type_error: "Enter a valid image url",
         }).url({message: "invalid image Url"}).optional(),
         address: string({
-            required_error: "address is required",
             invalid_type_error: "Enter a valid address",
-        }),
+        }).optional(),
         role: string({
             invalid_type_error: "Enter a valid role",
         }),
         type: string({
             invalid_type_error: "Enter a valid user type",
         }),
-        password: string({
-            required_error: "Password is required",
-        }).min(6, {message: "Password must be at least 6 characters"}),
-        confirmPassword: string({
-            required_error: "Password confirmation required",
-        }).min(6, {message: "Password must be at least 6 characters"}),
         status: string({
             invalid_type_error: "Enter a valid status"
         }),
@@ -67,9 +58,6 @@ export const createUserSchema = object({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional(),
        
-    }).refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords do not match",
-        path: ["confirmPassword"]
     })
     
 })

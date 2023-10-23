@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser"
 import bodyParser from "body-parser";
 import authRoutes from "./routes/auth/route"
 import associationRoutes from "./routes/association/route";
-
+import userRoutes from "./routes/user/route";
 
 
 const app = express();
@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //---------------------Routes------------------------------
 
 app.use("/api/auth", authRoutes);
-// app.use("/api/users", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/associations", associationRoutes);
 // app.use("/api/ranks", rankRoutes);
 // app.use("/api/vehicles", vehicleRoutes);
