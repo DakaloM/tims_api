@@ -14,7 +14,7 @@ import  jwt  from "jsonwebtoken";
 const router = express.Router();
 dotenv.config();
 
-router.post("/register", validate(supperAccountSchema), async(req:Request, res:Response) => {
+router.post("/register/userUser", validate(supperAccountSchema), async(req:Request, res:Response) => {
     const {email, phone, password, firstName, lastName} = req.body
 
     const emailExist =  await duplicateEmail(email);
