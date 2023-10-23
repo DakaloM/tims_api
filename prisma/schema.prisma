@@ -1,0 +1,708 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SuperAccount {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  phone     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String          @id @default(cuid())
+  associationId  String
+  email          String          @unique
+  SAID           BigInt          @unique
+  phone          String          @unique
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime
+  gender         String
+  image          String?
+  address        String
+  role           UserRole        @default(USER)
+  type           UserType
+  password       String
+  status         UserStatus      @default(PENDING)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdBy      String
+  updatedBy      String?
+  refreshToken   String?
+  communications Communication[]
+  employment     Employement?
+  fees           Fee[]
+  nextOfKin      NextOfKin[]
+  otp            Otp?
+  association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+}
+
+model Association {
+  id                 String               @id @default(cuid())
+  name               String
+  registrationNumber String               @unique
+  address            String
+  area               String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  updatesBy          String?
+  contacts           AssociationContact[]
+  committees         Committee[]
+  communications     Communication[]
+  fees               Fee[]
+  licenses           License[]
+  manifests          Manifest[]
+  meetings           Meeting[]
+  nextOfKin          NextOfKin[]
+  passengers         Passenger[]
+  ranks              Rank[]
+  routes             Route[]
+  taxiFares          TaxiFare[]
+  trips              Trip[]
+  users              User[]
+  vehicles           Vehicle[]
+}
+
+model AssociationContact {
+  id            String        @id @default(cuid())
+  associationId String
+  email         String        @unique
+  role          String?
+  image         String?
+  phone         String
+  names         String
+  createdAt     DateTime      @default(now())
+  createdBy     String
+  updatedAt     DateTime      @updatedAt
+  updatedBy     String?
+  status        ContactStatus @default(AVAILABLE)
+  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+}
+
+model Otp {
+  id       String   @id @default(cuid())
+  otp      Int
+  userId   String   @unique
+  createAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model Rank {
+  id            String      @id @default(cuid())
+  name          String      @unique
+  address       String
+  image         String
+  associationId String
+  createdAt     DateTime    @default(now())
+  createdBy     String
+  updatedAt     DateTime    @updatedAt
+  updatedBy     String?
+  queues        Queue[]
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  routes        Route[]     @relation("RankToRoute")
+}
+
+model Route {
+  id            String       @id @default(cuid())
+  name          String
+  description   String
+  associationId String
+  destination   String
+  start         String
+  eta           String?
+  createdAt     DateTime     @default(now())
+  createdBy     String
+  updatedAt     DateTime     @updatedAt
+  updatedBy     String?
+  licenses      License[]
+  queues        Queue?
+  association   Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  points        RoutePoint[]
+  fare          TaxiFare?
+  trips         Trip[]
+  vehicles      Vehicle[]
+  ranks         Rank[]       @relation("RankToRoute")
+}
+
+model License {
+  id            String        @id @default(cuid())
+  licenseNumber String        @unique
+  code          String?
+  file          String
+  type          LicenseType
+  routeId       String?
+  associationId String
+  status        LicenseStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  userId        String?
+  issueDate     DateTime
+  expiryDate    DateTime
+  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  route         Route?        @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model Vehicle {
+  id                 String            @id @default(cuid())
+  make               String
+  model              String
+  color              String
+  registrationNumber String            @unique
+  insured            Boolean
+  financed           Boolean
+  status             VehicleStatus     @default(PENDING)
+  routeId            String?
+  associationId      String
+  area               String?
+  image              String
+  type               VehicleType
+  ownerId            String?
+  driverIds          String[]
+  currentDriverId    String?
+  createdAt          DateTime          @default(now())
+  createdBy          String
+  updatedAt          DateTime          @updatedAt
+  updatedBy          String?
+  tripStatus         VehicleTripStatus @default(NO_TRIP)
+  year               Int
+  fees               Fee[]
+  finance            Finance?
+  insuarance         Insuarance?
+  queueVehicle       QueueVehicle?
+  association        Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  route              Route?            @relation(fields: [routeId], references: [id])
+}
+
+model Insuarance {
+  id          String   @id @default(cuid())
+  companyName String
+  startDate   DateTime
+  vehicleId   String   @unique
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Finance {
+  id          String   @id @default(cuid())
+  companyName String
+  startDate   DateTime
+  vehicleId   String   @unique
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model RoutePoint {
+  id          String   @id @default(cuid())
+  name        String
+  rank        Boolean
+  coordinates String?
+  routeId     String
+  createdBy   String
+  address     String
+  createdAt   DateTime @default(now())
+  route       Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model Queue {
+  id        String         @id @default(cuid())
+  rankId    String
+  routeId   String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  createdBy String
+  updatedBy String?
+  marshalId String
+  rank      Rank           @relation(fields: [rankId], references: [id], onDelete: Cascade)
+  route     Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicles  QueueVehicle[]
+  trips     Trip[]
+}
+
+model QueueVehicle {
+  id                 String             @id @default(cuid())
+  queueId            String
+  queueNumber        Int
+  vehicleId          String?            @unique
+  RegistrationNumber String
+  driver             String
+  diskNumber         String
+  status             QueueVehicleStatus @default(WAITING)
+  queue              Queue              @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  vehicle            Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Trip {
+  id            String      @id @default(cuid())
+  routeId       String
+  vehicleId     String
+  startTime     DateTime
+  endTime       DateTime?
+  duration      String?
+  type          TripType
+  associationId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String
+  updatedBy     String?
+  queueId       String?
+  manifests     Manifest?
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  queue         Queue?      @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  route         Route       @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model Manifest {
+  id            String      @id @default(cuid())
+  tripId        String      @unique
+  associationId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String
+  updatedBy     String?
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  trip          Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  passengers    Passenger[]
+}
+
+model Passenger {
+  id            String      @id @default(cuid())
+  fisrtName     String
+  lastName      String
+  phone         String      @unique
+  email         String?     @unique
+  address       String
+  manifestId    String
+  associationId String
+  createdAt     DateTime    @default(now())
+  createdBy     String
+  updatedAt     DateTime    @updatedAt
+  updatedBy     String?
+  SAID          String      @unique
+  gender        String
+  nextOfKin     NextOfKin[]
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  manifest      Manifest    @relation(fields: [manifestId], references: [id], onDelete: Cascade)
+}
+
+model NextOfKin {
+  id            String      @id @default(cuid())
+  address       String
+  relationship  String
+  email         String?     @unique
+  phone         String      @unique
+  userId        String?
+  passengerId   String?
+  associationId String
+  createdAt     DateTime    @default(now())
+  createdBy     String
+  updatedAt     DateTime    @updatedAt
+  updatedBy     String?
+  names         String
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  passenger     Passenger?  @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Committee {
+  id            String            @id @default(cuid())
+  name          String            @unique
+  associationId String
+  association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  members       CommitteeMember[]
+  meetings      Meeting[]
+}
+
+model CommitteeMember {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  role        String
+  email       String?   @unique
+  phone       String    @unique
+  committeeId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   String
+  updatedBy   String?
+  committee   Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+}
+
+model Meeting {
+  id            String      @id @default(cuid())
+  date          DateTime
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String
+  updatedBy     String?
+  duration      String
+  agenda        String
+  minutes       Json[]
+  comitteeId    String
+  associationId String
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  committe      Committee   @relation(fields: [comitteeId], references: [id], onDelete: Cascade)
+}
+
+model Communication {
+  id            String            @id @default(cuid())
+  type          CommunicationType
+  updatedAt     DateTime          @updatedAt
+  updatedBy     String?
+  subject       String
+  associationId String
+  userId        String?
+  createdAt     DateTime          @default(now())
+  association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user          User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      Message[]
+}
+
+model Message {
+  id              String        @id @default(cuid())
+  communicationId String
+  message         String
+  senderId        String
+  createdAt       DateTime      @default(now())
+  communication   Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+}
+
+model TaxiFare {
+  id            String      @id @default(cuid())
+  routeId       String      @unique
+  currentPrice  Decimal
+  previousPrice Decimal?
+  associationId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String
+  updatedBy     String?
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  route         Route       @relation(fields: [routeId], references: [id])
+}
+
+model Fee {
+  id                String         @id @default(cuid())
+  type              FeeType
+  userId            String
+  vehicleId         String?
+  outstandingAmount Decimal
+  payedAmount       Decimal
+  datePayed         DateTime
+  dueDate           DateTime
+  proofOfPayment    String
+  paymentType       FeePaymentType
+  recurring         PaymentPeriod
+  status            paymentStatus  @default(PENDING)
+  associationId     String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  createdBy         String
+  updatedBy         String?
+  association       Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle           Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleIncome {
+  id        String              @id @default(cuid())
+  date      DateTime
+  vehicleId String
+  status    VehicleIncomeStatus @default(PENDING)
+  createdAt DateTime            @default(now())
+  createdBy String
+  updatedAt DateTime            @updatedAt
+  updatedBy String?
+  amount    Decimal
+}
+
+model EmploymentApplications {
+  id                 String                      @id @default(cuid())
+  email              String                      @unique
+  SAID               BigInt                      @unique
+  phone              String                      @unique
+  firstName          String
+  lastName           String
+  dateOfBirth        DateTime
+  gender             String
+  image              String?
+  address            String
+  resume             String
+  postId             String
+  positionId         String
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+  updatedBy          String?
+  status             EmploymentApplicationStatus @default(PENDING)
+  employmentPosition EmploymentPosition          @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  employmentPost     EmploymentPost              @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model ApplicationRequirementsAnswer {
+  id                   String              @id @default(cuid())
+  applicantId          String              @unique
+  requirementId        String
+  requirementQuestion  String
+  requirementAnswer    String
+  positionRequirements PositionRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+}
+
+model EmploymentPost {
+  id           String                   @id @default(cuid())
+  date         DateTime                 @default(now())
+  status       RecruitmentStatus        @default(OPEN)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  createdBy    String
+  updatedBy    String?
+  description  String?
+  applications EmploymentApplications[]
+  position     EmploymentPosition?
+}
+
+model EmploymentPosition {
+  id               String                    @id @default(cuid())
+  position         String
+  areaOfOperation  String
+  responsibilities String[]
+  expectations     String[]
+  employementType  EmplymentType
+  contractLength   String?
+  postId           String?                   @unique
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  createdBy        String
+  updatedBy        String?
+  status           employementPositionStatus @default(VACANT)
+  duties           String[]
+  employement      Employement[]
+  applications     EmploymentApplications[]
+  recruitment      EmploymentPost?           @relation(fields: [postId], references: [id])
+  requirements     PositionRequirement?
+}
+
+model PositionRequirement {
+  id                  String                          @id @default(cuid())
+  positionId          String                          @unique
+  requirement         String
+  requirementQuestion String
+  requirementAnswer   String
+  createdAt           DateTime                        @default(now())
+  createdBy           String
+  updatedAt           DateTime                        @updatedAt
+  updatedBy           String?
+  answers             ApplicationRequirementsAnswer[]
+  position            EmploymentPosition              @relation(fields: [positionId], references: [id], onDelete: Cascade)
+}
+
+model Employement {
+  id              String             @id @default(cuid())
+  referenceNumber String             @unique
+  startDate       DateTime
+  positionId      String
+  employeeId      String?            @unique
+  status          EmployementStatus
+  availability    Avalilabity        @default(NOT_AVAILABLE)
+  user            User?              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  position        EmploymentPosition @relation(fields: [positionId], references: [id])
+  shift           Shift?
+}
+
+model Shift {
+  id           String      @id @default(cuid())
+  startTime    String
+  knockOffTime String
+  createdAt    DateTime    @default(now())
+  createdBy    String
+  updatedAt    DateTime    @updatedAt
+  updatedBy    String?
+  employmentId String      @unique
+  offDays      String[]
+  workingDays  String[]
+  employement  Employement @relation(fields: [employmentId], references: [id])
+}
+
+model Document {
+  id            String       @id @default(cuid())
+  type          DocumentType
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  file          String
+  ownerId       String?
+  routeId       String?
+  vehicleId     String?
+  driverId      String?
+  associationId String
+  createdAt     DateTime     @default(now())
+  createdBy     String
+  updatedAt     DateTime     @updatedAt
+  updatedBy     String?
+}
+
+model Record {
+  id      String     @id @default(cuid())
+  type    RecordType
+  date    DateTime   @default(now())
+  staffId String
+  action  String
+  message String?
+}
+
+enum UserRole {
+  SUPERUSER
+  ADMIN
+  USER
+}
+
+enum UserType {
+  DRIVER
+  STAFF
+  OWNER
+  EXTERNAL
+  COMMUNITY
+  MARSHAL
+}
+
+enum UserStatus {
+  VERIFIED
+  NOT_VERIFIED
+  SUSPENDED
+  PENDING
+}
+
+enum ContactStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum LicenseType {
+  DRIVER
+  OWNER
+  ROUTE
+}
+
+enum LicenseStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+  REJECTED
+}
+
+enum VehicleType {
+  OWNER
+  ASSOCIATION
+}
+
+enum VehicleStatus {
+  WORKING
+  SUSPENDED
+  PENDING
+}
+
+enum VehicleTripStatus {
+  TRIP
+  NO_TRIP
+}
+
+enum QueueVehicleStatus {
+  WAITING
+  DERPATED
+  REJECTED
+}
+
+enum TripType {
+  LONG
+  SHORT
+}
+
+enum CommunicationType {
+  ANNOUNCEMENT
+  REPORT
+  COMPLAINT
+  EMERGENCY
+  ENQUIRY
+  FEES
+}
+
+enum FeeType {
+  VEHICLE
+  OWNER
+}
+
+enum paymentStatus {
+  APPROVED
+  PENDING
+  REJECTED
+  MISSING_PROOF
+}
+
+enum FeePaymentType {
+  ONCE_OFF
+  RECURRING
+}
+
+enum PaymentPeriod {
+  MONTHLY
+  QUARTELY
+  ANNUALY
+  SEMI_ANUALLY
+}
+
+enum VehicleIncomeStatus {
+  PENDING
+  COMPLETE
+}
+
+enum EmploymentApplicationStatus {
+  REJECTED
+  PENDING
+  APPROVED
+}
+
+enum RecruitmentStatus {
+  OPEN
+  CLOSED
+}
+
+enum EmplymentType {
+  CONTRACT
+  PERMANENT
+}
+
+enum employementPositionStatus {
+  FILLED
+  VACANT
+}
+
+enum EmployementStatus {
+  TERMINATED
+  RESIGNED
+  ACTIVE
+}
+
+enum Avalilabity {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
+enum DocumentType {
+  DRIVER_LICENSE
+  ROUTE_LICENSE
+  OWNER_LICENCE
+  VEHICLE_DISK
+}
+
+enum RecordType {
+  FEE_ADJUSTMENT
+  ACCOUNT_CREATION
+  ACCOUNT_UPDATE
+  ROUTES
+  STAFF_HIRING
+  STAFF_TERMINATION
+  QUEUE
+}
