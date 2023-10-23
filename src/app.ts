@@ -6,12 +6,12 @@ import { MiddleWareProps } from "./types";
 import corsOption from "./config/corsOptions";
 import cookieParser from "cookie-parser"
 import bodyParser from "body-parser";
-import { port } from "./config/connection";
-import authRoutes from "./routes/auth/auth"
+import authRoutes from "./routes/auth/route"
 
 
 
 const app = express();
+const port = process.env.PORT;
 
 //Middlewares
 app.use(({req, res, next} : MiddleWareProps) => {
