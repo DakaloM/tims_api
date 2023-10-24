@@ -91,7 +91,7 @@ router.get("/:id",verifyToken, async(req:Request, res:Response) => {
         return res.status(406).json({error, message: "Association not found"});
     }
 })
-// Delete one account
+// Delete association
 router.delete("/:id",verifyTokenAndSuperAccount, async(req:Request, res:Response) => {
     try {
         const association = await db.association.delete({

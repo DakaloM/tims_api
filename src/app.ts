@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth/route"
 import associationRoutes from "./routes/association/route";
 import userRoutes from "./routes/user/route";
 import enumRoutes from "./routes/enum/route"
+import associationContactRoutes from "./routes/associationContact/route"
 
 const app = express();
 const port = process.env.PORT;
@@ -42,7 +43,7 @@ app.use("/api/enums", enumRoutes);
 // app.use("/api/routes", routeRoutes);
 // app.use("/api/licenses", licenseRoutes);
 // app.use("/api/otp", otpRoutes);
-// app.use("/api/associationContacts", associationContactRoutes);
+app.use("/api/associationContacts", associationContactRoutes);
 
 
 //---------------------Routes------------------------------

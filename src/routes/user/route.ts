@@ -164,6 +164,102 @@ router.get("/",verifyTokenAndAdmin,async (req: Request, res: Response) => {
   
 })
 
+// Get all users for the association
+router.get("/association/:associationId",verifyTokenAndAdmin,async (req: Request, res: Response) => {
+    
+    const query = req.query
+    const type = query.type
+    const status = query.status
+    const role = query.role
+    const id = req.params.associationId
+    let users: object = {};
+
+    try {
+    
+        if(!isEmpty(query)){
+
+            if(type){
+                const typeQuery = String(type).toUpperCase()
+                if(typeQuery === UserType.OWNER){
+                    users = await db.user.findMany({
+                        where:{type: UserType.OWNER, associationId: id}
+                    })
+                } else if(typeQuery === UserType.DRIVER) {
+                    users = await db.user.findMany({
+                        where:{type: UserType.DRIVER, associationId: id}
+                    })
+                } else if(typeQuery === UserType.COMMUNITY) {
+                    users = await db.user.findMany({
+                        where:{type: UserType.COMMUNITY, associationId: id}
+                    })
+                } else if(typeQuery === UserType.STAFF) {
+                    users = await db.user.findMany({
+                        where:{type: UserType.STAFF, associationId: id}
+                    })
+                
+                } else if(typeQuery === UserType.EXTERNAL) {
+                    users = await db.user.findMany({
+                        where:{type: UserType.EXTERNAL, associationId: id}
+                    })
+                
+                } else if(typeQuery === UserType.MARSHAL) {
+                    users = await db.user.findMany({
+                        where:{type: UserType.MARSHAL, associationId: id}
+                    })
+                }
+            } else if (status){
+                const statusQuery = String(status).toUpperCase()
+                if(statusQuery === UserStatus.NOT_VERIFIED){
+                    users = await db.user.findMany({
+                        where: {status: UserStatus.NOT_VERIFIED, associationId: id}
+                    })
+                }
+                else if(statusQuery === UserStatus.PENDING){
+                    users = await db.user.findMany({
+                        where: {status: UserStatus.PENDING, associationId: id}
+                    })
+                }
+                else if(statusQuery === UserStatus.SUSPENDED){
+                    users = await db.user.findMany({
+                        where: {status: UserStatus.SUSPENDED, associationId: id}
+                    })
+                }
+                else if(statusQuery === UserStatus.VERIFIED){
+                    users = await db.user.findMany({
+                        where: {status: UserStatus.VERIFIED, associationId: id}
+                    })
+                }
+            } else if (role){
+                const roleQuery = String(role).toUpperCase()
+                if(roleQuery === UserRole.ADMIN){
+                    users = await db.user.findMany({
+                        where: {role: UserRole.ADMIN, associationId: id}
+                    })
+                }
+                else if(roleQuery === UserRole.USER){
+                    users = await db.user.findMany({
+                        where: {role: UserRole.USER, associationId: id}
+                    })
+                }
+            } 
+        }else {
+            users = await db.user.findMany({
+                where: {
+                    associationId: id
+                }
+            });    
+        }
+
+        return res.status(200).json(serializeObject(users))
+        
+    } catch (error) {
+        return res.status(500).json({error, message: "Failed to retrieve users"})
+    }
+        
+    
+  
+})
+
 // Get single user
 router.get("/:id",verifyTokenAndAdmin,async (req: Request, res: Response) => {
     const id = req.params.id
