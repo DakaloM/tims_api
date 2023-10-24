@@ -32,7 +32,7 @@ export const feeSchema = object({
         proofOfPayment: string({
             required_error: "proofOfPayment is required",
             invalid_type_error: "Invalid proofOfPayment provided"
-        }).url({message: "Invalid file url"}),
+        }),
         paymentType: string({
             required_error: "paymentType is required",
             invalid_type_error: "Invalid paymentType provided"

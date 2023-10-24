@@ -1,6 +1,6 @@
 import { coerce, number, object, string } from "zod";
 
-export const licenseSchema = object({
+export const nextOfKinSchema = object({
     body: object({
         address: string({
             required_error: "address is required",

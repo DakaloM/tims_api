@@ -16,7 +16,7 @@ export const employmentSchema = object({
         file: string({
             required_error: "File is required",
             invalid_type_error: "Invalid file provided"
-        }).url({message: "Invalid file url"}),
+        }),
         ownerId: string({
             invalid_type_error: "Invalid ownerId provided"
         }).optional(),

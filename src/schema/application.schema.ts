@@ -39,10 +39,10 @@ export const feeSchema = object({
         resume: string({
             required_error: "Resume url is required",
             invalid_type_error: "Enter a valid resume url",
-         }).url({message: "invalid resume Url"}),
+         }),
         image: string({
             invalid_type_error: "Enter a valid image url",
-         }).url({message: "invalid image Url"}).optional(),
+         }).optional(),
         postId: string({
             required_error: "postId is required",
             invalid_type_error: "Invalid postId provided"

@@ -69,7 +69,7 @@ export const vehicleSchema = object({
         image: string({
             required_error: "Vehicle image is required",
             invalid_type_error: "invalid image provided",
-        }).url({message: "invalid image Url provided"}),
+        }),
         
       
     })

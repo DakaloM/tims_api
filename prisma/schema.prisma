@@ -99,7 +99,7 @@ model Otp {
 
 model Rank {
   id            String      @id @default(cuid())
-  name          String      @unique
+  name          String      
   address       String
   image         String
   associationId String
@@ -137,7 +137,7 @@ model Route {
 model License {
   id            String        @id @default(cuid())
   licenseNumber String        @unique
-  code          String?
+  code          Int?
   file          String
   type          LicenseType
   routeId       String?

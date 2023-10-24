@@ -23,7 +23,7 @@ export const associationContactSchema = object({
         }).startsWith("0", {message: "Phone must start with '0'"}),
         image: string({
             invalid_type_error: "Enter a valid image url",
-         }).url({message: "invalid image Url"}).optional(),
+         }).optional(),
          names: string({
             required_error: "Required value Names is not privided",
             invalid_type_error: "Invalid name provided"
@@ -64,7 +64,7 @@ export const updateAssociationContactSchema = object({
         }).startsWith("0", {message: "Phone must start with '0'"}).optional(),
         image: string({
             invalid_type_error: "Enter a valid image url",
-         }).url({message: "invalid image Url"}).optional(),
+         }).optional(),
          names: string({
             invalid_type_error: "Invalid name provided"
          }).optional(),

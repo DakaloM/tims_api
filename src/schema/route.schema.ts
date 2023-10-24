@@ -21,14 +21,6 @@ export const routeSchema = object({
         eta: string({
             invalid_type_error: "invalid eta provided"
         }).optional(),
-        address: string({
-            required_error: "Required value 'address' is not provided",
-            invalid_type_error: "Invalid address provided" 
-        }),
-        image: string({
-            required_error: "Required value ImageUrl is not provided",
-            invalid_type_error: "Invalid mage Url provided",
-        }).url({message: "Invalid Url provided"}),
         associationId: string({
             required_error: "Required value AssociationId is not provided",
             invalid_type_error: "Invalid associationId",
@@ -36,9 +28,31 @@ export const routeSchema = object({
         createdBy: string({
             required_error: "Required userId in not provided",
             invalid_type_error:"Invalid value provided for the user Id",
+        }),
+       
+    })
+})
+export const updateRouteSchema = object({
+    body: object({
+        name: string({
+            invalid_type_error: "invalid value provided for the field 'name'",
         }).optional(),
+        description: string({
+            invalid_type_error: "Invalid description provided",
+        }).optional(),
+        start: string({
+            invalid_type_error: "Invalid start provided"
+        }).optional(),
+        destination: string({
+            invalid_type_error: "Invalid destination provided",
+        }).optional(),
+        eta: string({
+            invalid_type_error: "invalid eta provided"
+        }).optional(), 
         updatedBy: string({
+            required_error: "Required userId in not provided",
             invalid_type_error:"Invalid value provided for the user Id",
-        }).optional(),
+        }),
+       
     })
 })

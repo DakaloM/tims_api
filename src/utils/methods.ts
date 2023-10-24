@@ -1,3 +1,5 @@
+import {z} from "zod"
+
 const isEmpty = (obj: object) => {
     for (var prop in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, prop)) {
@@ -8,4 +10,13 @@ const isEmpty = (obj: object) => {
     return true
   }
 
-  export {isEmpty}
+const dateStringToIso = (dateString: string) => {
+  if(!dateString){
+    return ""
+  }
+  const newIsoDate = new Date(dateString).toISOString();
+  
+  return newIsoDate
+}
+
+  export {isEmpty, dateStringToIso}

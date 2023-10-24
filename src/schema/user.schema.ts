@@ -41,7 +41,7 @@ export const createUserSchema = object({
         }).optional(),
         image: string({
            invalid_type_error: "Enter a valid image url",
-        }).url({message: "invalid image Url"}).optional(),
+        }).optional(),
         address: string({
             invalid_type_error: "Enter a valid address",
         }).optional(),
@@ -96,7 +96,7 @@ export const updateUserSchema = object({
         }).optional(),
         image: string({
            invalid_type_error: "Enter a valid image url",
-        }).url({message: "invalid image Url"}).optional(),
+        }).optional(),
         address: string({
             invalid_type_error: "Enter a valid address",
         }).optional(),

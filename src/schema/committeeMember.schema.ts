@@ -1,6 +1,6 @@
 import { coerce, number, object, string } from "zod";
 
-export const licenseSchema = object({
+export const committeeMemberSchema = object({
     body: object({
 
         name: string({

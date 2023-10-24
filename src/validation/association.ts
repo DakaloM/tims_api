@@ -1,6 +1,20 @@
 
 import db from "../config/connection";
 
+const findAssociation = async (id: string) => {
+    const association = await db.association.findUnique({
+        where: {
+            id: id
+        }
+    });
+    if(association) {
+       return true; 
+    }
+    
+    return false
+    
+}
+
 
 const duplicateName = async (name: string) => {
     const nameExist = await db.association.findFirst({
@@ -27,4 +41,4 @@ const duplicateRegistration = async (regNumber: string) => {
     return false
 }
 
-export {duplicateName, duplicateRegistration}
+export {duplicateName, duplicateRegistration, findAssociation}
