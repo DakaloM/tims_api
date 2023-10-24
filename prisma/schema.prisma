@@ -471,14 +471,14 @@ model EmploymentPosition {
   areaOfOperation  String
   responsibilities String[]
   expectations     String[]
-  employementType  EmplymentType
+  employementType  EmploymentType
   contractLength   String?
   postId           String?                   @unique
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime                  @updatedAt
   createdBy        String
   updatedBy        String?
-  status           employementPositionStatus @default(VACANT)
+  status           EmploymentPositionStatus @default(VACANT)
   duties           String[]
   employement      Employement[]
   applications     EmploymentApplications[]
@@ -506,8 +506,8 @@ model Employement {
   startDate       DateTime
   positionId      String
   employeeId      String?            @unique
-  status          EmployementStatus
-  availability    Avalilabity        @default(NOT_AVAILABLE)
+  status          EmploymentStatus
+  availability    Availability        @default(NOT_AVAILABLE)
   user            User?              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   position        EmploymentPosition @relation(fields: [positionId], references: [id])
   shift           Shift?
@@ -669,23 +669,23 @@ enum RecruitmentStatus {
   CLOSED
 }
 
-enum EmplymentType {
+enum EmploymentType {
   CONTRACT
   PERMANENT
 }
 
-enum employementPositionStatus {
+enum EmploymentPositionStatus {
   FILLED
   VACANT
 }
 
-enum EmployementStatus {
+enum EmploymentStatus {
   TERMINATED
   RESIGNED
   ACTIVE
 }
 
-enum Avalilabity {
+enum Availability {
   AVAILABLE
   NOT_AVAILABLE
 }

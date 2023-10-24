@@ -9,6 +9,7 @@ import dotenv from 'dotenv'
 import { duplicateEmail, duplicatePhone } from "../../validation/superAccount";
 import { loginSchema } from "../../schema/login";
 import  jwt  from "jsonwebtoken";
+import { serializeObject } from "../../utils/serializer";
 
 
 const router = express.Router();
@@ -76,7 +77,7 @@ router.post("/login/superUser", validate(loginSchema), async(req:Request, res:Re
     const accessToken = jwt.sign({
         id: user.id,
         role: "supperAccount",
-    }, accessSecret, {expiresIn: "15m"} )
+    }, accessSecret, {expiresIn: "1d"} )
 
     const refreshToken = jwt.sign({
         id: user.id,
@@ -125,7 +126,7 @@ router.post("/login", validate(loginSchema), async(req:Request, res:Response) =>
     const accessToken = jwt.sign({
         id: user.id,
         role: "supperAccount",
-    }, accessSecret, {expiresIn: "15m"} )
+    }, accessSecret, {expiresIn: "1d"} )
 
     const newRefreshToken = jwt.sign({
         id: user.id,
@@ -139,9 +140,8 @@ router.post("/login", validate(loginSchema), async(req:Request, res:Response) =>
 
     // return data
     const {password, refreshToken, ...others} = user
-    res.status(200).json({
-        user: {...others, accessToken: accessToken}
-    })
+    const returnUser = {...others, accessToken: accessToken}
+    res.status(200).json(serializeObject(returnUser))
 
 
 })

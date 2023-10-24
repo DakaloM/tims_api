@@ -9,7 +9,7 @@ import bodyParser from "body-parser";
 import authRoutes from "./routes/auth/route"
 import associationRoutes from "./routes/association/route";
 import userRoutes from "./routes/user/route";
-
+import enumRoutes from "./routes/enum/route"
 
 const app = express();
 const port = process.env.PORT;
@@ -36,6 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/associations", associationRoutes);
+app.use("/api/enums", enumRoutes);
 // app.use("/api/ranks", rankRoutes);
 // app.use("/api/vehicles", vehicleRoutes);
 // app.use("/api/routes", routeRoutes);
