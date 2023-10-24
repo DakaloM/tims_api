@@ -1,6 +1,6 @@
 import { array, coerce, number, object, string, date } from "zod";
 
-export const insuaranceSchema = object({
+export const insuranceSchema = object({
     body: object({
         companyName: string({
             required_error: "Required value 'CompanyName' is not provided",
@@ -14,6 +14,21 @@ export const insuaranceSchema = object({
             required_error: "VehicleId is required",
             invalid_type_error: "Invalid vehicleId provided",
         })
+      
+      
+    })
+})
+export const updateInsuranceSchema = object({
+    body: object({
+        companyName: string({
+            invalid_type_error: "invalid value provided for the field 'CompanyName'",
+        }).optional(),
+        startDate: coerce.date({
+            invalid_type_error: "Invalid start date provided",
+        }).optional(),
+        vehicleId: string({
+            invalid_type_error: "Invalid vehicleId provided",
+        }).optional()
       
       
     })

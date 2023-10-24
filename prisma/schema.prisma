@@ -176,13 +176,13 @@ model Vehicle {
   year               Int
   fees               Fee[]
   finance            Finance?
-  insuarance         Insuarance?
+  insuarance         Insurance?
   queueVehicle       QueueVehicle?
   association        Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   route              Route?            @relation(fields: [routeId], references: [id])
 }
 
-model Insuarance {
+model Insurance {
   id          String   @id @default(cuid())
   companyName String
   startDate   DateTime

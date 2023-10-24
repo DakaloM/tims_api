@@ -18,3 +18,18 @@ export const financeSchema = object({
       
     })
 })
+export const updateFinanceSchema = object({
+    body: object({
+        companyName: string({
+            invalid_type_error: "invalid value provided for the field 'CompanyName'",
+        }).optional(),
+        startDate: coerce.date({
+            invalid_type_error: "Invalid start date provided",
+        }).optional(),
+        vehicleId: string({
+            invalid_type_error: "Invalid vehicleId provided",
+        }).optional()
+      
+      
+    })
+})

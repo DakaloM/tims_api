@@ -7,7 +7,7 @@ export const vehicleSchema = object({
             invalid_type_error: "invalid value provided for the field 'car make",
         }),
         model: string({
-            required_error: "Model is requyired",
+            required_error: "Model is required",
             invalid_type_error: "Invalid model provided" 
         }),
         color: string({
@@ -70,6 +70,64 @@ export const vehicleSchema = object({
             required_error: "Vehicle image is required",
             invalid_type_error: "invalid image provided",
         }),
+        
+      
+    })
+})
+export const updateVehicleSchema = object({
+    body: object({
+        make: string({
+            invalid_type_error: "invalid value provided for the field 'car make",
+        }).optional(),
+        model: string({
+            invalid_type_error: "Invalid model provided" 
+        }).optional(),
+        color: string({
+            invalid_type_error: "Invalid color provided" 
+        }).optional(),
+        year: number({
+            invalid_type_error: "Invalid year provided",
+        }).optional(),
+        registrationNumber: string({
+            invalid_type_error: "Invalid registrationNumber",
+        }).optional(),
+        insured: coerce.boolean({
+            invalid_type_error: "Invalid value provided for insured field"
+        }).optional(),
+        financed: coerce.boolean({
+            invalid_type_error: "Invalid value provided for financed field"
+        }).optional(),
+        routeId: string({
+            invalid_type_error:"Invalid RouteId provided",
+        }).optional(),
+        type: string({
+            invalid_type_error: "Invalid vehicleType type provided"
+        }).optional(),
+        ownerId: string({
+            invalid_type_error: "Invalid OwnerId provided"
+        }).optional(),
+        driverIds: string({
+            invalid_type_error: "Invalid driverId provided"
+        }).array().optional(),
+        currentDriverId: string({
+            invalid_type_error: "Invalid driverId provided"
+        }).optional(),
+        area: string({
+            invalid_type_error: "Invalid area provided"
+        }).optional(),
+        status: string({
+            invalid_type_error: "invalid vehicle status provided"
+        }).optional(),
+        updatedBy: string({
+            required_error: "updatedBy is required",
+            invalid_type_error: "Updated-by, not a valid field"
+        }),
+        stripStatus: string({
+            invalid_type_error: "Invalid trip status provided"
+        }).optional(),
+        image: string({
+            invalid_type_error: "invalid image provided",
+        }).optional(),
         
       
     })

@@ -102,7 +102,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
         }
         return res.status(201).json(license)
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to get rank"})
+        return res.status(500).json({error, message: "Failed to get license"})
     }
 })
 
