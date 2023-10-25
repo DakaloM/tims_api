@@ -219,6 +219,7 @@ model Queue {
   createdBy String
   updatedBy String?
   marshalId String
+  departedVehicles  Json[]
   rank      Rank           @relation(fields: [rankId], references: [id], onDelete: Cascade)
   route     Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
   vehicles  QueueVehicle[]
@@ -230,7 +231,7 @@ model QueueVehicle {
   queueId            String
   queueNumber        Int
   vehicleId          String?            @unique
-  RegistrationNumber String
+  registrationNumber String
   driver             String
   diskNumber         String
   status             QueueVehicleStatus @default(WAITING)
@@ -238,14 +239,21 @@ model QueueVehicle {
   vehicle            Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
+enum TripStatus {
+  INITIATED
+  COMPLETE
+  ON_ROUTE
+}
+
 model Trip {
   id            String      @id @default(cuid())
   routeId       String
   vehicleId     String
-  startTime     DateTime
-  endTime       DateTime?
+  departureTime     DateTime?   
+  arrivalTime       DateTime?
   duration      String?
   type          TripType
+  status        TripStatus  @default(INITIATED)
   associationId String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

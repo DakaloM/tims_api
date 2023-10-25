@@ -1,6 +1,6 @@
 import { array, coerce, number, object, string, date } from "zod";
 
-export const RoutePointSchema = object({
+export const routePointSchema = object({
     body: object({
         name: string({
             required_error: "Required value 'name' is not provided",
@@ -18,13 +18,34 @@ export const RoutePointSchema = object({
             invalid_type_error: "Invalid routeId provided",
         }),
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
         }),
         address: string({
             required_error: "Address is required",
             invalid_type_error: "Invalid address provided"
         }),
+      
+      
+    })
+})
+export const updateRoutePointSchema = object({
+    body: object({
+        name: string({
+            invalid_type_error: "invalid value provided for the field 'name'",
+        }).optional(),
+        rank: coerce.boolean({
+            invalid_type_error: "Invalid rank value provided",
+        }).optional(),
+        coordinates: string({
+            invalid_type_error: "Invalid vehicleId provided",
+        }).optional(),
+        routeId: string({
+            invalid_type_error: "Invalid routeId provided",
+        }).optional(),
+        address: string({
+            invalid_type_error: "Invalid address provided"
+        }).optional(),
       
       
     })

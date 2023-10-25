@@ -6,25 +6,19 @@ export const tripSchema = object({
             required_error: "Required value 'routeId' is not provided",
             invalid_type_error: "invalid value provided for the field 'routeId'",
         }),
-        startTime: coerce.date({
-            required_error: "startTime is required",
-            invalid_type_error: "Invalid startTime provided"
-        }),
-        endTime: coerce.date({
-            invalid_type_error: "Invalid endTime provided"
-        }).optional(),
-        duration: string({
-            invalid_type_error: "Invalid duration provided"
-        }).optional(),
         vehicleId: string({
             required_error: "VehicleId is required",
             invalid_type_error: "Invalid vehicleId provided"
         }),
+    
+        duration: string({
+            invalid_type_error: "Invalid duration provided"
+        }).optional(), 
         type: string({
             required_error: "type is required",
             invalid_type_error: "Invalid type provided",
         }),
-        associationid: string({
+        associationId: string({
             required_error: "AssociationId is required",
             invalid_type_error: "Invalid AssociationId provided"
         }),
@@ -32,12 +26,48 @@ export const tripSchema = object({
             invalid_type_error: "Invalid queueId"
         }).optional(),
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
         }),
-        updatedBy: string({
-            invalid_type_error: "Updated-by, not a valid field"
+        status: string({
+            invalid_type_error: "Invalid userId"
         }).optional(),
+
+      
+    })
+})
+export const updateTripSchema = object({
+    body: object({
+        routeId: string({
+            invalid_type_error: "invalid value provided for the field 'routeId'",
+        }).optional(),
+        vehicleId: string({
+            invalid_type_error: "Invalid vehicleId provided"
+        }).optional(),
+        startTime: string({
+            invalid_type_error: "Invalid startTime provided"
+        }).optional(),
+        endTime: string({
+            invalid_type_error: "Invalid endTime provided"
+        }).optional(),
+        duration: string({
+            invalid_type_error: "Invalid duration provided"
+        }).optional(), 
+        type: string({
+            invalid_type_error: "Invalid type provided",
+        }).optional(),
+        queueId: string({
+            invalid_type_error: "Invalid queueId"
+        }).optional(),
+
+        updatedBy: string({
+            required_error: "Updated-By field is required",
+            invalid_type_error: "Updated-by, not a valid field"
+        }),
+        status: string({
+            invalid_type_error: "Invalid userId"
+        }).optional(),
+
       
     })
 })

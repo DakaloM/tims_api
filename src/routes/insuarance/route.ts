@@ -2,12 +2,11 @@ import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
 import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization } from "../../middleware/verifyToken";
-import { findAssociation } from "../../validation/association";
 import { updateVehicleSchema, vehicleSchema } from "../../schema/vehicle.schema";
 import { duplicateRegNumber } from "../../validation/vehicle";
 import { financeSchema, updateFinanceSchema } from "../../schema/finance.schema";
-import { duplicateVehicle } from "../../validation/finance";
-import { insuranceSchema } from "../../schema/insurance.schema";
+import { duplicateVehicle } from "../../validation/insurance";
+import { insuranceSchema, updateInsuranceSchema } from "../../schema/insurance.schema";
 
 
 
@@ -19,98 +18,98 @@ router.post("/",verifyToken,validate(insuranceSchema),async (req: Request, res: 
     
     const vehicleExist = await duplicateVehicle(vehicleId);
     if(vehicleExist){
-        return res.status(409).json({message: "Vehicle already has finance"})
+        return res.status(409).json({message: "Vehicle already has insurance"})
     }
 
     // create
     try {
-        await db.finance.create({
+        await db.insurance.create({
             data: {
                 ...req.body,
             }
         })
-        return res.status(201).json({message: "Finance added successfully"});
+        return res.status(201).json({message: "Insurance added successfully"});
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to add new finance"});
+        return res.status(500).json({error, message: "Failed to add new insurance"});
     }
 })
 
-// update car finance
-router.patch("/:id",verifyTokenAndAuthorization,validate(updateFinanceSchema),async (req: Request, res: Response) => {
+// update car insurance
+router.patch("/:id",verifyTokenAndAuthorization,validate(updateInsuranceSchema),async (req: Request, res: Response) => {
     const id = req.params.id
-    const finance = await db.finance.findUnique({
+    const insurance = await db.insurance.findUnique({
         where: {id: id}
     })
-    if(!finance){
-        return res.status(404).json({message: "Finance not found"})
+    if(!insurance){
+        return res.status(404).json({message: "Insurance not found"})
     }
 
     // update
     try {
 
-        await db.finance.update({
+        await db.insurance.update({
             where: {id: id},
             data: {
                 ...req.body
             }
         })
-        return res.status(200).json({message: "Finance updated successfully"})
+        return res.status(200).json({message: "Insurance updated successfully"})
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to update finance"})
+        return res.status(500).json({error, message: "Failed to update insurance"})
     }
 })
 
-// delete a finance
+// delete a insurance
 router.delete("/:id",verifyTokenAndAuthorization,async (req: Request, res: Response) => {
 
     const id = req.params.id
-    const finance = await db.finance.findUnique({
+    const insurance = await db.insurance.findUnique({
         where: {id: id}
     })
 
-    if(!finance) {
-        return res.status(404).json({message: "Finance not found"})
+    if(!insurance) {
+        return res.status(404).json({message: "Insurance not found"})
     }
 
-    // delete finance
+    // delete insurance
     try {
         await db.finance.delete({
             where:{id: id}
         })
-        return res.status(201).json({message: "Finance deleted successfully"})
+        return res.status(201).json({message: "Insurance deleted successfully"})
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to delete finance"})
+        return res.status(500).json({error, message: "Failed to delete insurance"})
     }
 })
 
-// get a finance
+// get a insurance
 router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 
     const id = req.params.id
 
-    // get a finance
+    // get a insurance
     try {
-        const finance = await db.finance.findUnique({
+        const insurance = await db.insurance.findUnique({
             where:{id: id}
         })
-        if(!finance) {
-            return res.status(404).json({message: "Finance not found"})
+        if(!insurance) {
+            return res.status(404).json({message: "Insurance not found"})
         }
-        return res.status(200).json(finance)
+        return res.status(200).json(insurance)
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to get finance"})
+        return res.status(500).json({error, message: "Failed to get insurance"})
     }
 })
 
-// get all finances
-router.get("/",async (req: Request, res: Response) => {
+// get all insurances
+router.get("/",verifyTokenAndAdmin ,async (req: Request, res: Response) => {
 
-    // get all finances
+    // get all insurance
     try {
-        const finances = await db.finance.findMany()
-        return res.status(201).json(finances)
+        const insurances = await db.insurance.findMany()
+        return res.status(201).json(insurances)
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to retrieve finances"})
+        return res.status(500).json({error, message: "Failed to retrieve insurances"})
     }
 })
 

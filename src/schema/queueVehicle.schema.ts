@@ -6,10 +6,6 @@ export const queueVehicleSchema = object({
             required_error: "Required value 'queueId' is not provided",
             invalid_type_error: "invalid value provided for the field 'queueId'",
         }),
-        queueNumber: number({
-            required_error: "Queue number is required",
-            invalid_type_error: "Invalid queue number provided"
-        }),
         vehicleId: string({
             invalid_type_error: "Invalid vehicleId provided"
         }).optional(),
@@ -27,6 +23,28 @@ export const queueVehicleSchema = object({
         }),
         status: string({
             required_error: "vehicle status is required",
+            invalid_type_error: "Invalid status"
+        }).optional(),
+
+      
+    })
+})
+export const updateQueueVehicleSchema = object({
+    body: object({
+
+        vehicleId: string({
+            invalid_type_error: "Invalid vehicleId provided"
+        }).optional(),
+        RegistrationNumber: string({
+            invalid_type_error: "Invalid RegistrationNumber provided",
+        }).optional(),
+        driver: string({
+            invalid_type_error: "Invalid Driver provided"
+        }).optional(),
+        diskNumber: string({
+            invalid_type_error: "Invalid diskNumber"
+        }).optional(),
+        status: string({
             invalid_type_error: "Invalid status"
         }).optional(),
 

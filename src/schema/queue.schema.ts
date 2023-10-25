@@ -1,6 +1,6 @@
 import { array, coerce, number, object, string, date } from "zod";
 
-export const RoutePointSchema = object({
+export const queueSchema = object({
     body: object({
         rankId: string({
             required_error: "Required value 'rankId' is not provided",
@@ -11,20 +11,35 @@ export const RoutePointSchema = object({
             invalid_type_error: "Invalid routeId provided",
         }),
         marshalId: string({
-            required_error: "Marshalid is required",
+            required_error: "MarshalId is required",
             invalid_type_error: "Invalid marshalId provided"
         }),
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
         }),
-        updatedBy: string({
-            invalid_type_error: "Invalid userId"
+
+      
+      
+    })
+})
+export const updateQueueSchema = object({
+    body: object({
+        rankId: string({
+            invalid_type_error: "invalid value provided for the field 'rankId'",
         }).optional(),
-        address: string({
-            required_error: "Address is required",
-            invalid_type_error: "Invalid address provided"
+        routeId: string({
+            invalid_type_error: "Invalid routeId provided",
+        }).optional(),
+        marshalId: string({
+            invalid_type_error: "Invalid marshalId provided"
+        }).optional(),
+
+        updatedBy: string({
+            required_error: "'updatedBy' is required. Provide userId of the user updating this record" ,
+            invalid_type_error: "Invalid userId"
         }),
+
       
       
     })
