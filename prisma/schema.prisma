@@ -355,6 +355,11 @@ model Meeting {
   committe      Committee   @relation(fields: [committeeId], references: [id], onDelete: Cascade)
 }
 
+enum CommuniocationStatus {
+  OPEN
+  CLOSED
+}
+
 model Communication {
   id            String            @id @default(cuid())
   type          CommunicationType
@@ -362,7 +367,9 @@ model Communication {
   updatedBy     String?
   subject       String
   associationId String
+  assignedTo    String?
   userId        String?
+  status        CommuniocationStatus @default(OPEN)
   createdAt     DateTime          @default(now())
   association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   user          User?             @relation(fields: [userId], references: [id], onDelete: Cascade)

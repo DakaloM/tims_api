@@ -13,10 +13,29 @@ export const communicationSchema = object({
         associationId: string({
             required_error: "AssociationId required",
             invalid_type_error: "Invalid associationId",
-        }), 
+        }).cuid({message: "Invalid entry"}), 
+        assignedTo: string({
+            required_error: "AssociationId required",
+            invalid_type_error: "Invalid assignee Id",
+        }).cuid({message: "Invalid entry"}).optional(), 
         userId: string({
             invalid_type_error: "Invalid userId",
+        }).cuid({message: "Invalid entry"}).optional(),
+        updatedBy: string({
+            invalid_type_error: "Updated-by, not a valid field"
+        }).optional()
+    })
+})
+export const updateCommunicationSchema = object({
+    body: object({
+ 
+        status: string({
+            invalid_type_error: "Invalid userId",
         }).optional(),
+        assignedTo: string({
+            required_error: "AssociationId required",
+            invalid_type_error: "Invalid assignee Id",
+        }).cuid({message: "Invalid entry"}).optional(),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional()
