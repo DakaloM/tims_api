@@ -7,20 +7,14 @@ export const manifestSchema = object({
             invalid_type_error: "invalid value provided for the field 'tripId'",
         }),
  
-        associationid: string({
+        associationId: string({
             required_error: "AssociationId is required",
             invalid_type_error: "Invalid AssociationId provided"
         }),
-        queueId: string({
-            invalid_type_error: "Invalid queueId"
-        }).optional(),
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
         }),
-        updatedBy: string({
-            invalid_type_error: "Updated-by, not a valid field"
-        }).optional(),
-      
+
     })
 })

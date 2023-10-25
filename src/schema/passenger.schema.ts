@@ -22,6 +22,10 @@ export const passengerSchema = object({
             required_error: "Phone required",
             invalid_type_error: "invalid Phone number",
         }).startsWith("0", {message: "Phone must start with '0'"}),
+        emergencyContact: string({
+            required_error: "Phone required",
+            invalid_type_error: "invalid Phone number",
+        }).startsWith("0", {message: "Phone must start with '0'"}),
         firstName: string({
             required_error: "First name required",
             invalid_type_error: "invalid Name ",
@@ -42,6 +46,44 @@ export const passengerSchema = object({
             required_error: "Crteated-by field required",
             invalid_type_error: "Invalid userid"
         }),
+        updatedBy: string({
+            invalid_type_error: "Updated-by, not a valid field"
+        }).optional(),
+       
+    })
+})
+export const updatePassengerSchema = object({
+    body: object({
+        associationId: string({
+            invalid_type_error: "Invalid associationId",
+        }).optional(),  
+        manifestId: string({
+            invalid_type_error: "Invalid manifestId"
+        }).optional(),
+        email: string({
+            invalid_type_error: "Email must be a string",
+        }).email({message: "Invalid email address"}).optional(),
+        SAID: number({
+            invalid_type_error: "Invalid SAID",
+        }).optional(),
+        phone: string({
+            invalid_type_error: "invalid Phone number",
+        }).startsWith("0", {message: "Phone must start with '0'"}).optional(),
+        emergencyContact: string({
+            invalid_type_error: "invalid Phone number",
+        }).startsWith("0", {message: "Phone must start with '0'"}).optional(),
+        firstName: string({
+            invalid_type_error: "invalid Name ",
+        }).optional(),
+        lastName: string({
+            invalid_type_error: "invalid Name ",
+        }).optional(),
+        gender: string({
+            invalid_type_error: "Enter a valid gender",
+        }).optional(),
+        address: string({
+            invalid_type_error: "Enter a valid address",
+        }).optional(),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional(),

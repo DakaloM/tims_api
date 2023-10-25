@@ -39,6 +39,8 @@ model User {
   createdBy      String
   updatedBy      String?
   refreshToken   String?
+  passengerId    String?
+  committeeMemberships     CommitteeMember[]
   communications Communication[]
   employment     Employement?
   fees           Fee[]
@@ -268,12 +270,10 @@ model Trip {
 
 model Manifest {
   id            String      @id @default(cuid())
-  tripId        String      @unique
+  tripId       String      @unique
   associationId String
   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
   createdBy     String
-  updatedBy     String?
   association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   trip          Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
   passengers    Passenger[]
@@ -281,10 +281,11 @@ model Manifest {
 
 model Passenger {
   id            String      @id @default(cuid())
-  fisrtName     String
+  firstName     String
   lastName      String
   phone         String      @unique
-  email         String?     @unique
+  emergencyContact String   
+  email         String      @unique
   address       String
   manifestId    String
   associationId String
@@ -292,9 +293,8 @@ model Passenger {
   createdBy     String
   updatedAt     DateTime    @updatedAt
   updatedBy     String?
-  SAID          String      @unique
+  SAID          BigInt      @unique
   gender        String
-  nextOfKin     NextOfKin[]
   association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   manifest      Manifest    @relation(fields: [manifestId], references: [id], onDelete: Cascade)
 }
@@ -303,24 +303,22 @@ model NextOfKin {
   id            String      @id @default(cuid())
   address       String
   relationship  String
-  email         String?     @unique
-  phone         String      @unique
-  userId        String?
-  passengerId   String?
+  names         String
+  email         String?     
+  phone         String      
+  userId        String
   associationId String
   createdAt     DateTime    @default(now())
   createdBy     String
   updatedAt     DateTime    @updatedAt
   updatedBy     String?
-  names         String
   association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  passenger     Passenger?  @relation(fields: [passengerId], references: [id], onDelete: Cascade)
   user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Committee {
   id            String            @id @default(cuid())
-  name          String            @unique
+  name          String            
   associationId String
   association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   members       CommitteeMember[]
@@ -329,15 +327,15 @@ model Committee {
 
 model CommitteeMember {
   id          String    @id @default(cuid())
-  name        String    @unique
-  role        String
-  email       String?   @unique
-  phone       String    @unique
+  userId      String
+  role        String     
   committeeId String
+  associationId String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   createdBy   String
   updatedBy   String?
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
   committee   Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
 }
 
@@ -351,10 +349,10 @@ model Meeting {
   duration      String
   agenda        String
   minutes       Json[]
-  comitteeId    String
+  committeeId    String
   associationId String
   association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  committe      Committee   @relation(fields: [comitteeId], references: [id], onDelete: Cascade)
+  committe      Committee   @relation(fields: [committeeId], references: [id], onDelete: Cascade)
 }
 
 model Communication {
@@ -565,13 +563,13 @@ enum UserRole {
   SUPERUSER
   ADMIN
   USER
+  COMMUNITY
 }
 
 enum UserType {
   DRIVER
   STAFF
   OWNER
-  EXTERNAL
   COMMUNITY
   MARSHAL
 }

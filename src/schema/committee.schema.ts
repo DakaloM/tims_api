@@ -13,3 +13,12 @@ export const committeeSchema = object({
 
     })
 })
+export const updateCommitteeSchema = object({
+    body: object({
+        name: string({
+            invalid_type_error: "Enter a valid name",
+        }).optional(),
+        
+
+    })
+})

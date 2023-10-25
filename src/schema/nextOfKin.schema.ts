@@ -23,10 +23,7 @@ export const nextOfKinSchema = object({
         }).startsWith("0", {message: "Phone must start with '0'"}),
         userId: string({
             invalid_type_error: "Invalid userId",
-        }).optional(),
-        passengerId: string({
-            invalid_type_error: "Invalid passengerId"
-        }).optional(),
+        }),
         associationId: string({
             required_error: "AssociationId required",
             invalid_type_error: "Invalid associationId",
@@ -37,5 +34,35 @@ export const nextOfKinSchema = object({
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional()
+    })
+})
+export const updateNextOfKinSchema = object({
+    body: object({
+        address: string({
+            invalid_type_error: "Enter a valid address",
+        }).optional(),
+        relationship: string({
+            invalid_type_error: "Invalid relationship provided"
+        }).optional(),
+        names: string({
+            invalid_type_error: "Invalid names provided"
+        }).optional(),
+        email: string({
+            invalid_type_error: "Invalid email address"
+        }).email({message: "invalid email address"}).optional(),
+        phone: string({
+            invalid_type_error: "invalid Phone number",
+        }).startsWith("0", {message: "Phone must start with '0'"}).optional(),
+        userId: string({
+            invalid_type_error: "Invalid userId",
+        }).optional(),
+        associationId: string({
+            invalid_type_error: "Invalid associationId",
+        }), 
+
+        updatedBy: string({
+            required_error: "'updated-By' This field is required",
+            invalid_type_error: "Updated-by, not a valid field"
+        })
     })
 })
