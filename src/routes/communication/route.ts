@@ -5,10 +5,12 @@ import {
   verifyToken,
   verifyTokenAndAdmin,
   verifyTokenAndAuthorization,
+  verifyTokenAndSuperAccount,
   verifyTokenAndSuperUser,
 } from "../../middleware/verifyToken";
 import { communicationSchema, updateCommunicationSchema } from "../../schema/communication.schema";
 import { duplicateCommunication } from "../../validation/communication";
+import { findAssociation } from "../../validation/association";
 
 const router = express.Router();
 
@@ -63,79 +65,79 @@ router.patch(
           ...req.body,
         },
       });
-      return res.status(200).json({ message: "meeting updated successfully" });
+      return res.status(200).json({ message: "communication updated successfully" });
     } catch (error) {
       return res
         .status(500)
-        .json({ error, message: "Failed to update meeting" });
+        .json({ error, message: "Failed to update communication" });
     }
   }
 );
 
-// delete a meeting
+// delete a communication
 router.delete(
   "/:id",
-  verifyTokenAndSuperUser,
+  verifyTokenAndSuperUser || verifyTokenAndAuthorization,
   async (req: Request, res: Response) => {
     const id = req.params.id;
-    const meeting = await db.meeting.findUnique({
+    const communication = await db.communication.findUnique({
       where: { id: id },
     });
 
-    if (!meeting) {
-      return res.status(404).json({ message: "meeting not found" });
+    if (!communication) {
+      return res.status(404).json({ message: "communication not found" });
     }
 
-    // delete meeting
+    // delete communication
     try {
-      await db.meeting.delete({
+      await db.communication.delete({
         where: { id: id },
       });
-      return res.status(201).json({ message: "meeting deleted successfully" });
+      return res.status(201).json({ message: "communication deleted successfully" });
     } catch (error) {
       return res
         .status(500)
-        .json({ error, message: "Failed to delete meeting" });
+        .json({ error, message: "Failed to delete communication" });
     }
   }
 );
 
-// get a meeting
+// get a communication
 router.get(
   "/:id",
-  verifyTokenAndAuthorization,
+  verifyToken,
   async (req: Request, res: Response) => {
     const id = req.params.id;
 
     // get a meeting
     try {
-      const meeting = await db.meeting.findUnique({
+      const communication = await db.communication.findUnique({
         where: { id: id },
       });
-      if (!meeting) {
-        return res.status(404).json({ message: "meeting not found" });
+      if (!communication) {
+        return res.status(404).json({ message: "communication not found" });
       }
-      return res.status(200).json(meeting);
+      return res.status(200).json(communication);
     } catch (error) {
-      return res.status(500).json({ error, message: "Failed to get meeting" });
+      return res.status(500).json({ error, message: "Failed to get communication" });
     }
   }
 );
 
-// get all meetings
-router.get("/", async (req: Request, res: Response) => {
-  // get all meetings
+// get all communication
+router.get("/", verifyTokenAndSuperAccount, async (req: Request, res: Response) => {
+  // get all communication
   try {
-    const meetings = await db.meeting.findMany();
-    return res.status(201).json(meetings);
+    const communications = await db.communication.findMany();
+    return res.status(201).json(communications);
   } catch (error) {
     return res
       .status(500)
-      .json({ error, message: "Failed to retrieve meetings" });
+      .json({ error, message: "Failed to retrieve communication" });
   }
 });
 
-// get all meetings for aa association
+// get all communications for aa association
 router.get(
   "/association/:associationId",
   verifyTokenAndAdmin,
@@ -148,44 +150,44 @@ router.get(
     }
     // get all meetings
     try {
-      const meetings = await db.meeting.findMany({
+      const communications = await db.communication.findMany({
         where: {
           associationId: id,
         },
       });
-      return res.status(201).json(meetings);
+      return res.status(201).json(communications);
     } catch (error) {
       return res
         .status(500)
-        .json({ error, message: "Failed to retrieve meetings" });
+        .json({ error, message: "Failed to retrieve communications" });
     }
   }
 );
-// get all meetings for a committee
+// get all communications for a user
 router.get(
-  "/committee/:committeeId",
-  verifyTokenAndAdmin,
+  "/user/:userId",
+  verifyToken,
   async (req: Request, res: Response) => {
-    const id = req.params.committeeId;
-    const committee = await db.committee.findUnique({
+    const id = req.params.userId;
+    const user = await db.user.findUnique({
       where: { id: id },
     });
 
-    if (!committee) {
-      return res.status(404).json({ message: "Committee not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    // get all meetings
+    // get all communications
     try {
-      const meetings = await db.meeting.findMany({
+      const communications = await db.communication.findMany({
         where: {
-          committeeId: id,
+          userId: id,
         },
       });
-      return res.status(201).json(meetings);
+      return res.status(201).json(communications);
     } catch (error) {
       return res
         .status(500)
-        .json({ error, message: "Failed to retrieve meetings" });
+        .json({ error, message: "Failed to retrieve communications" });
     }
   }
 );

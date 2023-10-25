@@ -1,6 +1,6 @@
 import {object, string } from "zod";
 
-export const communicationSchema = object({
+export const messageSchema = object({
     body: object({
         communicationId: string({
             required_error: "communicationId is required",
