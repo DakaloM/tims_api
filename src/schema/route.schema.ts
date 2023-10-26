@@ -1,4 +1,4 @@
-import { object, string } from "zod";
+import { number, object, string } from "zod";
 
 export const routeSchema = object({
     body: object({
@@ -21,6 +21,10 @@ export const routeSchema = object({
         eta: string({
             invalid_type_error: "invalid eta provided"
         }).optional(),
+        fare: number({
+            required_error: "Fare price is required fir every route",
+            invalid_type_error: "invalid eta provided"
+        }),
         associationId: string({
             required_error: "Required value AssociationId is not provided",
             invalid_type_error: "Invalid associationId",
@@ -49,6 +53,9 @@ export const updateRouteSchema = object({
         eta: string({
             invalid_type_error: "invalid eta provided"
         }).optional(), 
+        fare: number({
+            invalid_type_error: "invalid eta provided"
+        }).optional(),
         updatedBy: string({
             required_error: "Required userId in not provided",
             invalid_type_error:"Invalid value provided for the user Id",

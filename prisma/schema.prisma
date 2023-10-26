@@ -69,10 +69,15 @@ model Association {
   passengers         Passenger[]
   ranks              Rank[]
   routes             Route[]
-  taxiFares          TaxiFare[]
   trips              Trip[]
   users              User[]
+  applications       EmploymentApplications[]
+  posts              EmploymentPost[]
   vehicles           Vehicle[]
+  positions          EmploymentPosition[]
+  employments        Employement[]
+  documents          Document[]
+  records            Record[]
 }
 
 model AssociationContact {
@@ -130,7 +135,7 @@ model Route {
   queues        Queue?
   association   Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
   points        RoutePoint[]
-  fare          TaxiFare?
+  fare          Decimal
   trips         Trip[]
   vehicles      Vehicle[]
   ranks         Rank[]       @relation("RankToRoute")
@@ -385,19 +390,6 @@ model Message {
   communication   Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
 }
 
-model TaxiFare {
-  id            String      @id @default(cuid())
-  routeId       String      @unique
-  currentPrice  Decimal
-  previousPrice Decimal?
-  associationId String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  createdBy     String
-  updatedBy     String?
-  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  route         Route       @relation(fields: [routeId], references: [id])
-}
 
 model Fee {
   id                String         @id @default(cuid())
@@ -408,6 +400,7 @@ model Fee {
   payedAmount       Decimal
   datePayed         DateTime
   dueDate           DateTime
+  description       String
   proofOfPayment    String
   paymentType       FeePaymentType
   recurring         PaymentPeriod
@@ -447,23 +440,17 @@ model EmploymentApplications {
   address            String
   resume             String
   postId             String
+  associationId      String
   positionId         String
   createdAt          DateTime                    @default(now())
   updatedAt          DateTime                    @updatedAt
   updatedBy          String?
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
   status             EmploymentApplicationStatus @default(PENDING)
   employmentPosition EmploymentPosition          @relation(fields: [positionId], references: [id], onDelete: Cascade)
   employmentPost     EmploymentPost              @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
-model ApplicationRequirementsAnswer {
-  id                   String              @id @default(cuid())
-  applicantId          String              @unique
-  requirementId        String
-  requirementQuestion  String
-  requirementAnswer    String
-  positionRequirements PositionRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
-}
 
 model EmploymentPost {
   id           String                   @id @default(cuid())
@@ -474,7 +461,9 @@ model EmploymentPost {
   createdBy    String
   updatedBy    String?
   description  String?
+  associationId String
   applications EmploymentApplications[]
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
   position     EmploymentPosition?
 }
 
@@ -484,45 +473,37 @@ model EmploymentPosition {
   areaOfOperation  String
   responsibilities String[]
   expectations     String[]
-  employementType  EmploymentType
+  employmentType  EmploymentType
   contractLength   String?
   postId           String?                   @unique
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime                  @updatedAt
   createdBy        String
+  associationId    String
   updatedBy        String?
   status           EmploymentPositionStatus @default(VACANT)
   duties           String[]
   employement      Employement[]
   applications     EmploymentApplications[]
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
   recruitment      EmploymentPost?           @relation(fields: [postId], references: [id])
-  requirements     PositionRequirement?
+
 }
 
-model PositionRequirement {
-  id                  String                          @id @default(cuid())
-  positionId          String                          @unique
-  requirement         String
-  requirementQuestion String
-  requirementAnswer   String
-  createdAt           DateTime                        @default(now())
-  createdBy           String
-  updatedAt           DateTime                        @updatedAt
-  updatedBy           String?
-  answers             ApplicationRequirementsAnswer[]
-  position            EmploymentPosition              @relation(fields: [positionId], references: [id], onDelete: Cascade)
-}
+
 
 model Employement {
   id              String             @id @default(cuid())
-  referenceNumber String             @unique
+  referenceNumber Int             @unique 
   startDate       DateTime
   positionId      String
   employeeId      String?            @unique
+  associationId    String
   status          EmploymentStatus
   availability    Availability        @default(NOT_AVAILABLE)
   user            User?              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   position        EmploymentPosition @relation(fields: [positionId], references: [id])
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
   shift           Shift?
 }
 
@@ -555,6 +536,7 @@ model Document {
   createdBy     String
   updatedAt     DateTime     @updatedAt
   updatedBy     String?
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
 }
 
 model Record {
@@ -564,6 +546,8 @@ model Record {
   staffId String
   action  String
   message String?
+  associationId String
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

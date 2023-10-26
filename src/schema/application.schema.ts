@@ -1,6 +1,6 @@
 import {coerce, number, object, string, date } from "zod";
 
-export const feeSchema = object({
+export const applicationSchema = object({
     body: object({
         
         email: string({
@@ -51,6 +51,16 @@ export const feeSchema = object({
             required_error: "positionId is required",
             invalid_type_error: "Invalid positionId provided"
         }),
+        status: string({
+            invalid_type_error: "Invalid status provided"
+        }).optional(),
+        
+       
+    })
+})
+export const updateApplicationSchema = object({
+    body: object({
+        
         status: string({
             invalid_type_error: "Invalid status provided"
         }).optional(),

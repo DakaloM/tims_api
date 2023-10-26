@@ -1,12 +1,16 @@
 import {coerce, number, object, string, date } from "zod";
 
-export const postSchema = object({
+export const positionSchema = object({
     body: object({
         
         position: string({
             required_error: "position is required",
             invalid_type_error: "Invalid position provided"
         }),
+        associationId: string({
+            required_error: "associationId is required",
+            invalid_type_error: "Invalid position provided"
+        }).cuid({message: "Invalid association id"}),
         areaOfOperation: string({
             required_error: "areaOfOperation is required",
             invalid_type_error: "Invalid areaOfOperation provided"
@@ -23,9 +27,9 @@ export const postSchema = object({
             required_error: "expectations is required",
             invalid_type_error: "Invalid expectations provided"
         }).array(),
-        employementType: string({
-            required_error: "employementType is required",
-            invalid_type_error: "Invalid employementType provided"
+        employmentType: string({
+            required_error: "employmentType is required",
+            invalid_type_error: "Invalid employmentType provided"
         }),
         contractLength: string({
             invalid_type_error: "contractLength not a valid field"
@@ -34,9 +38,43 @@ export const postSchema = object({
             invalid_type_error: "postId, not a valid field"
         }).optional(),
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
         }),
+        updatedBy: string({
+            invalid_type_error: "Updated-by, not a valid field"
+        }).optional(),
+       
+       
+    })
+})
+export const editPositionSchema = object({
+    body: object({
+        
+        position: string({
+            invalid_type_error: "Invalid position provided"
+        }),
+        areaOfOperation: string({
+            invalid_type_error: "Invalid areaOfOperation provided"
+        }),
+        duties: string({
+            invalid_type_error: "Invalid duties provided"
+        }).array(),
+        responsibilities: string({
+            invalid_type_error: "Invalid responsibilities provided"
+        }).array(),
+        expectations: string({
+            invalid_type_error: "Invalid expectations provided"
+        }).array(),
+        employmentType: string({
+            invalid_type_error: "Invalid employmentType provided"
+        }),
+        contractLength: string({
+            invalid_type_error: "contractLength not a valid field"
+        }).optional(),
+        postId: string({
+            invalid_type_error: "postId, not a valid field"
+        }).optional(),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional(),

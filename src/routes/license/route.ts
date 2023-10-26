@@ -100,7 +100,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
         if(!license) {
             return res.status(404).json({message: "License not found"})
         }
-        return res.status(201).json(license)
+        return res.status(200).json(license)
     } catch (error) {
         return res.status(500).json({error, message: "Failed to get license"})
     }
@@ -112,7 +112,7 @@ router.get("/",async (req: Request, res: Response) => {
     // get all license
     try {
         const licenses = await db.license.findMany()
-        return res.status(201).json(licenses)
+        return res.status(200).json(licenses)
     } catch (error) {
         return res.status(500).json({error, message: "Failed to retrieve licenses"})
     }

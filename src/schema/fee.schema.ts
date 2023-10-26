@@ -21,11 +21,15 @@ export const feeSchema = object({
             required_error: "payedAmount is required",
             invalid_type_error: "Invalid payedAmount provided"
         }),
-        datePayed: coerce.date({
+        datePayed: string({
             required_error: "datePayed is required",
             invalid_type_error: "Invalid datePayed provided"
         }),
-        dueDate: coerce.date({
+        description: string({
+            required_error: "description is required",
+            invalid_type_error: "Invalid datePayed provided"
+        }),
+        dueDate: string({
             required_error: "dueDate is required",
             invalid_type_error: "Invalid dueDate provided"
         }),
@@ -50,12 +54,60 @@ export const feeSchema = object({
             invalid_type_error: "Invalid associationId",
         }), 
         createdBy: string({
-            required_error: "Crteated-by field required",
+            required_error: "created-by field required",
             invalid_type_error: "Invalid userId"
         }),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional(),
+       
+    })
+})
+export const updateFeeSchema = object({
+    body: object({
+        type: string({
+            invalid_type_error: "Enter a valid type",
+        }).optional(),
+        userId: string({
+            invalid_type_error: "Invalid userId provided"
+        }).optional(),
+        vehicleId: string({
+            invalid_type_error: "Invalid vehicleId provided"
+        }).optional(),
+        description: string({
+            invalid_type_error: "Invalid vehicleId provided"
+        }).optional(),
+        outstandingAmount: number({
+            invalid_type_error: "Invalid outstandingAmount provided"
+        }).optional(),
+        payedAmount: number({
+            invalid_type_error: "Invalid payedAmount provided"
+        }).optional(),
+        datePayed: string({
+            invalid_type_error: "Invalid datePayed provided"
+        }).optional(),
+        dueDate: string({
+            invalid_type_error: "Invalid dueDate provided"
+        }).optional(),
+        proofOfPayment: string({
+            invalid_type_error: "Invalid proofOfPayment provided"
+        }).optional(),
+        paymentType: string({
+            invalid_type_error: "Invalid paymentType provided"
+        }).optional(),
+        recurring: string({
+            invalid_type_error: "Invalid recurring provided"
+        }).optional(),
+        status: string({
+            invalid_type_error: "Invalid status provided"
+        }).optional(),
+        associationId: string({
+            invalid_type_error: "Invalid associationId",
+        }), 
+        updatedBy: string({
+            required_error: "UserId of editor is required",
+            invalid_type_error: "Updated-by, not a valid field"
+        }),
        
     })
 })

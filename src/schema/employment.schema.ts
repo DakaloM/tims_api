@@ -3,21 +3,22 @@ import {coerce, number, object, string, date } from "zod";
 export const employmentSchema = object({
     body: object({
         
-        referenceNumber: string({
-            required_error: "referenceNumber is required",
-            invalid_type_error: "Invalid referenceNumber provided"
-        }),
-        startDate: coerce.date({
+        
+        startDate: string({
             required_error: "startDate is required",
             invalid_type_error: "Invalid startDate provided"
         }),
+        associationId: string({
+            required_error: "associationId is required",
+            invalid_type_error: "Invalid position provided"
+        }).cuid({message: "Invalid association id"}),
         positionId: string({
             required_error: "positionId is required",
             invalid_type_error: "Invalid positionId provided"
-        }),
+        }).cuid({message: "Invalid association id"}),
         employeeId: string({
             invalid_type_error: "Invalid employeeId provided"
-        }).optional(),
+        }).cuid({message: "Invalid association id"}).optional(),
         status: string({
             required_error: "status is required",
             invalid_type_error: "Invalid status provided"
