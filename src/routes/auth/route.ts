@@ -1,7 +1,6 @@
 
 import  db  from "../../config/connection";
 import express, { Response, Request } from "express"
-import { RouteFunctionProps } from "../../types";
 import validate from "../../middleware/validateResource";
 import { supperAccountSchema } from "../../schema/superAccount.schema";
 import bcrypt from "bcrypt"
@@ -125,7 +124,7 @@ router.post("/login", validate(loginSchema), async(req:Request, res:Response) =>
     //JWT
     const accessToken = jwt.sign({
         id: user.id,
-        role: "supperAccount",
+        role: user.role,
     }, accessSecret, {expiresIn: "30d"} )
 
     const newRefreshToken = jwt.sign({

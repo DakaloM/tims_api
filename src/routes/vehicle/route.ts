@@ -1,10 +1,11 @@
 import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
-import { verifyToken, verifyTokenAndAdmin } from "../../middleware/verifyToken";
+import { verifyToken, verifyTokenAndAdmin, verifyTokenAndSuperAccount, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
 import { findAssociation } from "../../validation/association";
 import { updateVehicleSchema, vehicleSchema } from "../../schema/vehicle.schema";
 import { duplicateRegNumber } from "../../validation/vehicle";
+import { validateUserId } from "../../validation/shared";
 
 
 
@@ -19,6 +20,18 @@ router.post("/",verifyTokenAndAdmin,validate(vehicleSchema),async (req: Request,
         return res.status(409).json({message: "Car registration number already exist"})
     }
 
+    if (req.body.insured === "true"){
+        req.body.insured = Boolean(true)
+    } else {
+        req.body.insured = Boolean(false)
+    }
+
+    if (req.body.financed === "true"){
+        req.body.financed = Boolean(true)
+    } else {
+        req.body.financed = Boolean(false)
+    }
+
     // create
     try {
         await db.vehicle.create({
@@ -28,13 +41,18 @@ router.post("/",verifyTokenAndAdmin,validate(vehicleSchema),async (req: Request,
         })
         return res.status(201).json({message: "Vehicle added successfully"});
     } catch (error) {
-        return res.status(500).json({error, message: "Failed to add new vehicle"});
+        return res.status(500).json({error, message: "Failed to add new vehicle", ...req.body});
     }
 })
 
 // update a vehicle
 router.patch("/:id",verifyTokenAndAdmin,validate(updateVehicleSchema),async (req: Request, res: Response) => {
     const id = req.params.id
+    const {updatedBy, ...others} = req.body
+    const userId = await validateUserId(updatedBy);
+    if(!userId) {
+        return res.status(404).json({message: "Invalid User Id provided"})
+    }
     const vehicle = await db.vehicle.findUnique({
         where: {id: id}
     })
@@ -58,7 +76,7 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateVehicleSchema),async (req
 })
 
 // delete a vehicle
-router.delete("/:id",verifyTokenAndAdmin,async (req: Request, res: Response) => {
+router.delete("/:id",verifyTokenAndSuperUser,async (req: Request, res: Response) => {
 
     const id = req.params.id
     const vehicle = await db.vehicle.findUnique({
@@ -100,11 +118,31 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 })
 
 // get all vehicles
-router.get("/",async (req: Request, res: Response) => {
+router.get("/", verifyTokenAndSuperAccount,async (req: Request, res: Response) => {
 
     // get all license
     try {
         const vehicles = await db.vehicle.findMany()
+        return res.status(200).json(vehicles)
+    } catch (error) {
+        return res.status(500).json({error, message: "Failed to retrieve vehicles"})
+    }
+})
+// get all vehicles FOR AN owner
+router.get("/owner/:ownerId", verifyToken,async (req: Request, res: Response) => {
+    const id = req.params.ownerId
+    const ownerId =- await validateUserId(id);
+
+    if(!ownerId) {
+        return res.status(404).json({message: "owner not found"})
+    }
+    // get all license
+    try {
+        const vehicles = await db.vehicle.findMany({
+            where: {
+                ownerId: id
+            }
+        })
         return res.status(201).json(vehicles)
     } catch (error) {
         return res.status(500).json({error, message: "Failed to retrieve vehicles"})

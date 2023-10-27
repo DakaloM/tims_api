@@ -1,11 +1,7 @@
 import dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client";
-  
-dotenv.config();
+      
+const db = new PrismaClient() 
 
-
-const port = process.env.PORT;
-const dbUri = process.env.DATABASE_URL;
-const db = new PrismaClient()
 
 export default db

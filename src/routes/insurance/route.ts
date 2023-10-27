@@ -1,12 +1,12 @@
 import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
-import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization } from "../../middleware/verifyToken";
-import { updateVehicleSchema, vehicleSchema } from "../../schema/vehicle.schema";
-import { duplicateRegNumber } from "../../validation/vehicle";
-import { financeSchema, updateFinanceSchema } from "../../schema/finance.schema";
+import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization, verifyTokenAndSuperAccount } from "../../middleware/verifyToken";
+
 import { duplicateVehicle } from "../../validation/insurance";
 import { insuranceSchema, updateInsuranceSchema } from "../../schema/insurance.schema";
+import { validateVehicleId } from "../../validation/shared";
+import { dateStringToIso } from "../../utils/methods";
 
 
 
@@ -15,14 +15,18 @@ const router = express.Router();
 // Create a insurance
 router.post("/",verifyToken,validate(insuranceSchema),async (req: Request, res: Response) => {
     const {vehicleId, ...others} = req.body
-    
+    const vehicle = await validateVehicleId(vehicleId)
+    if(!vehicle){
+        return res.status(409).json({message: "Vehicle not found"})
+    }
     const vehicleExist = await duplicateVehicle(vehicleId);
     if(vehicleExist){
-        return res.status(409).json({message: "Vehicle already has insurance"})
+        return res.status(409).json({message: "Vehicle already insured"})
     }
 
     // create
     try {
+        req.body.startDate = dateStringToIso(req.body.startDate);
         await db.insurance.create({
             data: {
                 ...req.body,
@@ -73,7 +77,7 @@ router.delete("/:id",verifyTokenAndAuthorization,async (req: Request, res: Respo
 
     // delete insurance
     try {
-        await db.finance.delete({
+        await db.insurance.delete({
             where:{id: id}
         })
         return res.status(201).json({message: "Insurance deleted successfully"})
@@ -102,7 +106,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 })
 
 // get all insurances
-router.get("/",verifyTokenAndAdmin ,async (req: Request, res: Response) => {
+router.get("/",verifyTokenAndSuperAccount ,async (req: Request, res: Response) => {
 
     // get all insurance
     try {

@@ -1,9 +1,7 @@
 import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
-import { verifyToken, verifyTokenAndAdmin } from "../../middleware/verifyToken";
-import { rankSchema, updateRankSchema } from "../../schema/rank.schema";
-import { duplicateRankAddress, duplicateRankName } from "../../validation/rank";
+import { verifyToken, verifyTokenAndAdmin, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
 import { duplicateLicenseNumber } from "../../validation/license";
 import { licenseSchema, updateLicenseSchema } from "../../schema/license.schema";
 import { findAssociation } from "../../validation/association";
@@ -15,10 +13,14 @@ const router = express.Router();
 
 // Create a license
 router.post("/",verifyTokenAndAdmin,validate(licenseSchema),async (req: Request, res: Response) => {
-    const {licenseNumber, issueDate, expiryDate, ...others} = req.body
+    const {licenseNumber, issueDate, expiryDate, associationId, ...others} = req.body
     
+    const association = await findAssociation(associationId)
     req.body.issueDate = dateStringToIso(issueDate)
     req.body.expiryDate = dateStringToIso(expiryDate)
+    if(!association){
+        return res.status(409).json({message: "Association not found"})
+    }
     const duplicate = await duplicateLicenseNumber(licenseNumber);
     if(duplicate){
         return res.status(409).json({message: "License number already registered"})
@@ -65,7 +67,7 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateLicenseSchema),async (req
 })
 
 // delete a license
-router.delete("/:id",verifyTokenAndAdmin,async (req: Request, res: Response) => {
+router.delete("/:id",verifyTokenAndSuperUser,async (req: Request, res: Response) => {
 
     const id = req.params.id
     const license = await db.license.findUnique({
@@ -107,7 +109,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 })
 
 // get all licenses
-router.get("/",async (req: Request, res: Response) => {
+router.get("/", verifyTokenAndAdmin,async (req: Request, res: Response) => {
 
     // get all license
     try {
@@ -118,7 +120,7 @@ router.get("/",async (req: Request, res: Response) => {
     }
 })
 // get all licenses for an association
-router.get("/association/:associationId",async (req: Request, res: Response) => {
+router.get("/association/:associationId", verifyTokenAndAdmin,async (req: Request, res: Response) => {
 
     const id = req.params.associationId
     // check if the association exists

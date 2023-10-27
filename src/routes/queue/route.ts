@@ -1,17 +1,45 @@
 import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
-import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization, verifyTokenAndMarshal } from "../../middleware/verifyToken";
-import { queueSchema, updateQueueSchema } from "../../schema/queue.schema";
+import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization, verifyTokenAndMarshal, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
+import { queueSchema } from "../../schema/queue.schema";
 import { queueVehicleSchema } from "../../schema/queueVehicle.schema";
+import { validateRankId, validateRouteId, validateUserId, validateVehicleId } from "../../validation/shared";
 
 
 
 const router = express.Router();
 
 // Create a queue
-router.post("/",verifyTokenAndMarshal,validate(queueSchema),async (req: Request, res: Response) => {
- 
+router.post("/",verifyTokenAndMarshal ,validate(queueSchema),async (req: Request, res: Response) => {
+    
+    const {rankId, routeId, marshalId, createdBy, ...others} = req.body
+    const rank = await validateRankId(rankId);
+
+    if(!rank) {
+        return res.status(404).json({message: "Rank not found"})
+    }
+
+    const route = await validateRouteId(routeId)
+    if(!route) {
+        return res.status(404).json({message: "Route not found"})
+    }
+
+    const user = await validateUserId(marshalId);
+    if(!user) {
+        return res.status(404).json({message: "Marshal not found"})
+    }
+
+    const queue = await db.queue.findUnique({
+        where: {
+            routeId: routeId
+        }
+    })
+
+    if(queue) {
+        return res.status(409).json({message: "This route already have a queue"})
+    }
+
     // create
     try {
         await db.queue.create({
@@ -27,7 +55,13 @@ router.post("/",verifyTokenAndMarshal,validate(queueSchema),async (req: Request,
 
 // add departed vehicle 
 router.patch("/:id/addDeparted",verifyTokenAndMarshal,validate(queueVehicleSchema),async (req: Request, res: Response) => {
+    const {vehicleId, driver} = req.body
     const id = req.params.id
+
+    const vehicle = await validateVehicleId(vehicleId)
+    if(!vehicle) {
+        return res.status(404).json({message: "Vehicle not found"})
+    }
     const queue = await db.queue.findUnique({
         where: {id: id}
     })
@@ -42,30 +76,6 @@ router.patch("/:id/addDeparted",verifyTokenAndMarshal,validate(queueVehicleSchem
             where: {id: id},
             data: {
                 departedVehicles: [...queue.departedVehicles + {...req.body}]
-            }
-        })
-        return res.status(200).json({message: "Queue updated successfully"})
-    } catch (error) {
-        return res.status(500).json({error, message: "Failed to update queue"})
-    }
-})
-// update queue
-router.patch("/:id",verifyTokenAndMarshal,validate(updateQueueSchema),async (req: Request, res: Response) => {
-    const id = req.params.id
-    const queue = await db.queue.findUnique({
-        where: {id: id}
-    })
-    if(!queue){
-        return res.status(404).json({message: "Queue not found"})
-    }
-
-    // update
-    try {
-
-        await db.queue.update({
-            where: {id: id},
-            data: {
-                ...req.body
             }
         })
         return res.status(200).json({message: "Queue updated successfully"})

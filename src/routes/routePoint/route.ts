@@ -3,6 +3,7 @@ import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
 import { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization } from "../../middleware/verifyToken";
 import { routePointSchema, updateRoutePointSchema } from "../../schema/routePoint.schema";
+import { validateRouteId, validateUserId } from "../../validation/shared";
 
 
 
@@ -11,9 +12,24 @@ const router = express.Router();
 // Create a routePoint
 router.post("/",verifyTokenAndAdmin,validate(routePointSchema),async (req: Request, res: Response) => {
  
+    const {routeId, createdBy, ...others} = req.body
+    const route = await validateRouteId(routeId);
+    if(!route){
+        return res.status(404).json({message: "Route not found"});
+    }
 
+    const user = await validateUserId(createdBy);
+    if(!user){
+        return res.status(404).json({message: "User not found"});
+    }
     // create
     try {
+        if (req.body.rank === "true"){
+            req.body.rank = Boolean(true)
+        } else {
+            req.body.rank = Boolean(false)
+        }
+    
         await db.routePoint.create({
             data: {
                 ...req.body,

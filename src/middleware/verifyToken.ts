@@ -26,10 +26,10 @@ const verifyTokenAndAuthorization = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req);
+  
   verifyToken(req, res, () => {
    
-    if (req.user.id === req.query.userId || req.user.role === "ADMIN") {
+    if (req.user.id === req.query.userId || req.user.role === "ADMIN"  || req.user.role === "SUPERUSER") {
       next();
     } else {
      
@@ -45,7 +45,7 @@ const verifyTokenAndMarshal = (
 ) => {
   verifyToken(req, res, () => {
    
-    if (req.user.role === "ADMIN" || req.user.role === "MARSHAL" || req.user.role === "supperAccount"
+    if (req.user.role === "ADMIN" || req.user.role === "MARSHAL" || req.user.role === "SUPERUSER"
     ) {
       next();
     } else {
@@ -62,7 +62,7 @@ const verifyTokenAndOwner = (
 ) => {
   verifyToken(req, res, () => {
    
-    if (req.user.role === "ADMIN" || req.user.role === "OWNER" || req.user.role === "supperAccount"
+    if (req.user.role === "ADMIN" || req.user.role === "OWNER" || req.user.role === "SUPERUSER"
     ) {
       next();
     } else {
@@ -81,7 +81,7 @@ const verifyTokenAndDriver = (
 ) => {
   verifyToken(req, res, () => {
    
-    if (req.user.role === "ADMIN" || req.user.role === "DRIVER" ||req.user.role === "supperAccount"
+    if (req.user.role === "ADMIN" || req.user.role === "DRIVER" ||req.user.role === "SUPERUSER"
     ) {
       next();
     } else {
@@ -119,7 +119,7 @@ const verifyTokenAndSuperUser = (
     if (req.user.role === "SUPERUSER") {
       next();
     } else {
-      return res.status(403).json({ message: "Permission Denied! You are not a super user" });
+      return res.status(403).json({user: req.user ,message: "Permission Denied! You are not a super user" });
     }
   });
 };

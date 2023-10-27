@@ -7,6 +7,8 @@ import { updateVehicleSchema, vehicleSchema } from "../../schema/vehicle.schema"
 import { duplicateRegNumber } from "../../validation/vehicle";
 import { financeSchema, updateFinanceSchema } from "../../schema/finance.schema";
 import { duplicateVehicle } from "../../validation/finance";
+import { dateStringToIso } from "../../utils/methods";
+import { validateVehicleId } from "../../validation/shared";
 
 
 
@@ -15,6 +17,10 @@ const router = express.Router();
 // Create a finance
 router.post("/",verifyToken,validate(financeSchema),async (req: Request, res: Response) => {
     const {vehicleId, ...others} = req.body
+    const vehicle = await validateVehicleId(vehicleId)
+    if(!vehicle){
+        return res.status(409).json({message: "Vehicle not found"})
+    }
     
     const vehicleExist = await duplicateVehicle(vehicleId);
     if(vehicleExist){
@@ -23,6 +29,7 @@ router.post("/",verifyToken,validate(financeSchema),async (req: Request, res: Re
 
     // create
     try {
+        req.body.startDate = dateStringToIso(req.body.startDate);
         await db.finance.create({
             data: {
                 ...req.body,
@@ -101,17 +108,17 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
     }
 })
 
-// get all finances
-router.get("/",async (req: Request, res: Response) => {
+// // get all finances
+// router.get("/",async (req: Request, res: Response) => {
 
-    // get all finances
-    try {
-        const finances = await db.finance.findMany()
-        return res.status(201).json(finances)
-    } catch (error) {
-        return res.status(500).json({error, message: "Failed to retrieve finances"})
-    }
-})
+//     // get all finances
+//     try {
+//         const finances = await db.finance.findMany()
+//         return res.status(200).json(finances)
+//     } catch (error) {
+//         return res.status(500).json({error, message: "Failed to retrieve finances"})
+//     }
+// })
 
 
 

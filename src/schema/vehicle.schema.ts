@@ -22,18 +22,18 @@ export const vehicleSchema = object({
             required_error: "Required value registrationNumber is not provided",
             invalid_type_error: "Invalid registrationNumber",
         }),
-        insured: coerce.boolean({
+        insured: string({
             required_error: "Insured value is required",
             invalid_type_error: "Invalid value provided for insured field"
         }),
-        financed: coerce.boolean({
+        financed: string({
             required_error: "Financed value is required",
             invalid_type_error: "Invalid value provided for financed field"
         }),
         associationId: string({
             required_error: "Required value AssociationId is not provided",
             invalid_type_error: "Invalid associationId",
-        }), 
+        }).cuid({message: "Invalid association Id"}), 
         routeId: string({
             invalid_type_error:"Invalid RouteId provided",
         }).optional(),
@@ -58,7 +58,7 @@ export const vehicleSchema = object({
             invalid_type_error: "invalid vehicle status provided"
         }).optional(),
         createdBy: string({
-            required_error: "Crteated-by field required"
+            required_error: "Created-by field required"
         }),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
@@ -121,7 +121,7 @@ export const updateVehicleSchema = object({
         updatedBy: string({
             required_error: "updatedBy is required",
             invalid_type_error: "Updated-by, not a valid field"
-        }),
+        }).cuid({message: "Invalid association Id"}),
         stripStatus: string({
             invalid_type_error: "Invalid trip status provided"
         }).optional(),

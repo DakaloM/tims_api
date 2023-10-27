@@ -15,6 +15,10 @@ import rankRoutes from "./routes/rank/route"
 import routeRoutes from "./routes/taxiRoute/route"
 import licenseRoutes from "./routes/license/route"
 import vehicleRoutes from "./routes/vehicle/route"
+import insurance from "./routes/insurance/route"
+import finance from "./routes/finance/route"
+import points from "./routes/routePoint/route"
+import queue from "./routes/queue/route"
 
 const app = express();
 const port = process.env.PORT;
@@ -46,6 +50,11 @@ app.use("/api/ranks", rankRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/licenses", licenseRoutes);
+app.use("/api/insurances", insurance);
+app.use("/api/finances", finance);
+app.use("/api/routePoints", points);
+app.use("/api/queues", queue);
+
 // app.use("/api/otp", otpRoutes);
 app.use("/api/associationContacts", associationContactRoutes);
 

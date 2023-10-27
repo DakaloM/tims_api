@@ -47,6 +47,9 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateRouteSchema),async (req: 
     const id = req.params.id
 
     const userId = await validateUserId(updatedBy);
+    if(!userId) {
+        return res.status(404).json({message: "Invalid User Id provided"})
+    }
     
 
     const route = await db.route.findUnique({
@@ -56,9 +59,7 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateRouteSchema),async (req: 
         return res.status(404).json({message: "Route not found"});
     }
 
-    if(!userId) {
-        return res.status(404).json({message: "Invalid User Id provided"})
-    }
+    
 
     try {
         await db.route.update({

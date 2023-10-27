@@ -47,6 +47,20 @@ const validateVehicleId = async (id: string) => {
 
     return false;
 }
+const validateRankId = async (id: string) => {
+
+    const found = await db.rank.findUnique({
+        where: {
+            id: id
+        }
+    }) 
+
+    if(found) {
+        return true;
+    }
+
+    return false;
+}
 const validateAssociationId = async (id: string) => {
 
     const found = await db.association.findUnique({
@@ -63,4 +77,4 @@ const validateAssociationId = async (id: string) => {
 }
 
 
-export {validateUserId, validateRouteId, validateVehicleId, validateAssociationId}
+export {validateUserId, validateRouteId, validateVehicleId, validateRankId, validateAssociationId}
