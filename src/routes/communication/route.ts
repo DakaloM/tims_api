@@ -11,6 +11,7 @@ import {
 import { communicationSchema, updateCommunicationSchema } from "../../schema/communication.schema";
 import { duplicateCommunication } from "../../validation/communication";
 import { findAssociation } from "../../validation/association";
+import { validateUserId } from "../../validation/shared";
 
 const router = express.Router();
 
@@ -80,6 +81,11 @@ router.delete(
   verifyTokenAndSuperUser || verifyTokenAndAuthorization,
   async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user.id
+    const user = await validateUserId(userId);
+    if(!user) {
+        return res.status(404).json({message: "UserId not found"})
+    }
     const communication = await db.communication.findUnique({
       where: { id: id },
     });

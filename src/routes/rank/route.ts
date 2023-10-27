@@ -1,9 +1,11 @@
 import db from "../../config/connection";
 import express, { Response, Request } from "express";
 import validate from "../../middleware/validateResource";
-import { verifyTokenAndAdmin } from "../../middleware/verifyToken";
+import { verifyTokenAndAdmin, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
 import { rankSchema, updateRankSchema } from "../../schema/rank.schema";
 import { duplicateRankAddress, duplicateRankName } from "../../validation/rank";
+import { findAssociation } from "../../validation/association";
+import { validateUserId } from "../../validation/shared";
 
 
 
@@ -12,9 +14,18 @@ const router = express.Router();
 // Create a rank
 router.post("/",verifyTokenAndAdmin,validate(rankSchema),async (req: Request, res: Response) => {
 
-    const {name,associationId, address ,...others} = req.body;
+    const {name,associationId, address, createdBy ,...others} = req.body;
     const nameExist = await duplicateRankName(name, associationId)
     const addressExist = await duplicateRankAddress(address, associationId)
+    const association = await findAssociation(associationId);
+    const user = await validateUserId(createdBy);
+
+    if(!user) {
+        return res.status(404).json({message: "User id not found"})
+    }
+    if(!association) {
+        return res.status(404).json({message: "Association id not found"})
+    }
     if(nameExist) {
         return res.status(409).json({message: "Rank with the same name already exist"})
     }
@@ -35,8 +46,12 @@ router.post("/",verifyTokenAndAdmin,validate(rankSchema),async (req: Request, re
 
 // edit a rank
 router.patch("/:id",verifyTokenAndAdmin,validate(updateRankSchema),async (req: Request, res: Response) => {
-
+    const {updatedBy, ...others} = req.body
     const id = req.params.id
+    const user = await validateUserId(updatedBy);
+    if(!user) {
+        return res.status(404).json({message: "User not found"})
+    }
     const rank = await db.rank.findUnique({
         where: {id: id}
     })
@@ -58,7 +73,7 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateRankSchema),async (req: R
 })
 
 // delete a rank
-router.delete("/:id",verifyTokenAndAdmin,async (req: Request, res: Response) => {
+router.delete("/:id",verifyTokenAndSuperUser,async (req: Request, res: Response) => {
 
     const id = req.params.id
     const rank = await db.rank.findUnique({

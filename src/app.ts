@@ -14,6 +14,7 @@ import associationContactRoutes from "./routes/associationContact/route"
 import rankRoutes from "./routes/rank/route"
 import routeRoutes from "./routes/taxiRoute/route"
 import licenseRoutes from "./routes/license/route"
+import vehicleRoutes from "./routes/vehicle/route"
 
 const app = express();
 const port = process.env.PORT;
@@ -42,7 +43,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/associations", associationRoutes);
 app.use("/api/enums", enumRoutes);
 app.use("/api/ranks", rankRoutes);
-// app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/licenses", licenseRoutes);
 // app.use("/api/otp", otpRoutes);

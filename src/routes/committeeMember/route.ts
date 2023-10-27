@@ -9,6 +9,7 @@ import { financeSchema, updateFinanceSchema } from "../../schema/finance.schema"
 import { duplicateVehicle } from "../../validation/finance";
 import { committeeMemberSchema, updateCommitteeMemberSchema } from "../../schema/committeeMember.schema";
 import { duplicateMember } from "../../validation/committeMember";
+import { validateUserId } from "../../validation/shared";
 
 
 
@@ -65,6 +66,11 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateCommitteeMemberSchema),as
 router.delete("/:id",verifyTokenAndSuperUser,async (req: Request, res: Response) => {
 
     const id = req.params.id
+    const userId = req.user.id
+    const user = await validateUserId(userId);
+    if(!user) {
+        return res.status(404).json({message: "UserId not found"})
+    }
     const committeeMember = await db.committeeMember.findUnique({
         where: {id: id}
     })

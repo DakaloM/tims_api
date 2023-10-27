@@ -5,9 +5,7 @@ export const associationContactSchema = object({
         associationId: string({
             required_error: "required field AssociationId is not provided",
             invalid_type_error: "invalid value provided for associationId"
-        }).refine((value) => value.length > 5, {
-            message: "AssociationId is too short"
-        }),
+        }).cuid({message: "Invalid association Id"}),
         email: string({
             required_error: "required field Email in not provided",
             invalid_type_error: "invalid email address"
@@ -31,7 +29,7 @@ export const associationContactSchema = object({
          createdBy: string({
             required_error: "Id of the user creating this record is required",
             invalid_type_error:"Invalid value provided for the user Id",
-         }),
+         }).cuid({message: "Invalid UserId"}),
          updatedBy: string({
             invalid_type_error:"Invalid value provided for the user Id",
          }).optional(),
@@ -43,12 +41,7 @@ export const associationContactSchema = object({
 })
 export const updateAssociationContactSchema = object({
     body: object({
-        associationId: string({
-            required_error: "required field AssociationId is not provided",
-            invalid_type_error: "invalid value provided for associationId"
-        }).refine((value) => value.length > 5, {
-            message: "AssociationId is too short"
-        }).optional(),
+        
         email: string({
             required_error: "required field Email in not provided",
             invalid_type_error: "invalid email address"
@@ -68,12 +61,11 @@ export const updateAssociationContactSchema = object({
          names: string({
             invalid_type_error: "Invalid name provided"
          }).optional(),
-         createdBy: string({
-            invalid_type_error:"Invalid value provided for the user Id",
-         }).optional(),
+        
          updatedBy: string({
+            required_error: "User id is required",
             invalid_type_error:"Invalid value provided for the user Id",
-         }),
+         }).cuid({message: "invalid user Id"}),
          status: string({
             required_error: "required field status is not provided",
             invalid_type_error: "Invalid status value provided"

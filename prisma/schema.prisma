@@ -19,44 +19,45 @@ model SuperAccount {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  associationId  String
-  email          String          @unique
-  SAID           BigInt          @unique
-  phone          String          @unique
-  firstName      String
-  lastName       String
-  dateOfBirth    DateTime?
-  gender         String?
-  image          String?
-  address        String?
-  role           UserRole        @default(USER)
-  type           UserType
-  password       String
-  status         UserStatus      @default(PENDING)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  createdBy      String
-  updatedBy      String?
-  refreshToken   String?
-  passengerId    String?
-  committeeMemberships     CommitteeMember[]
-  communications Communication[]
-  employment     Employement?
-  fees           Fee[]
-  nextOfKin      NextOfKin[]
-  otp            Otp?
-  association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  id                   String            @id @default(cuid())
+  associationId        String
+  email                String            @unique
+  SAID                 BigInt            @unique
+  phone                String            @unique
+  firstName            String
+  lastName             String
+  dateOfBirth          DateTime?
+  gender               String?
+  image                String?
+  address              String?
+  role                 UserRole          @default(USER)
+  type                 UserType
+  password             String
+  status               UserStatus        @default(PENDING)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  createdBy            String
+  updatedBy            String?
+  refreshToken         String?
+  passengerId          String?
+  committeeMemberships CommitteeMember[]
+  communications       Communication[]
+  employment           Employment?
+  fees                 Fee[]
+  nextOfKin            NextOfKin[]
+  otp                  Otp?
+  association          Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
 }
 
 model Association {
-  id                 String               @id @default(cuid())
+  id                 String                   @id @default(cuid())
   name               String
-  registrationNumber String               @unique
+  registrationNumber String                   @unique
   address            String
   area               String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  createdAt          DateTime                 @default(now())
+  createdBy          String
+  updatedAt          DateTime                 @updatedAt
   updatesBy          String?
   contacts           AssociationContact[]
   committees         Committee[]
@@ -75,7 +76,7 @@ model Association {
   posts              EmploymentPost[]
   vehicles           Vehicle[]
   positions          EmploymentPosition[]
-  employments        Employement[]
+  employments        Employment[]
   documents          Document[]
   records            Record[]
 }
@@ -106,7 +107,7 @@ model Otp {
 
 model Rank {
   id            String      @id @default(cuid())
-  name          String      
+  name          String
   address       String
   image         String
   associationId String
@@ -149,11 +150,13 @@ model License {
   type          LicenseType
   routeId       String?
   associationId String
+  vehicleId     String?  @unique
   status        LicenseStatus @default(PENDING)
   createdAt     DateTime      @default(now())
   userId        String?
   issueDate     DateTime
   expiryDate    DateTime
+  vehicle       Vehicle?  @relation(fields: [vehicleId], references: [id])
   association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
   route         Route?        @relation(fields: [routeId], references: [id], onDelete: Cascade)
 }
@@ -182,6 +185,7 @@ model Vehicle {
   tripStatus         VehicleTripStatus @default(NO_TRIP)
   year               Int
   fees               Fee[]
+  license            License?
   finance            Finance?
   insuarance         Insurance?
   queueVehicle       QueueVehicle?
@@ -218,19 +222,19 @@ model RoutePoint {
 }
 
 model Queue {
-  id        String         @id @default(cuid())
-  rankId    String
-  routeId   String         @unique
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  createdBy String
-  updatedBy String?
-  marshalId String
-  departedVehicles  Json[]
-  rank      Rank           @relation(fields: [rankId], references: [id], onDelete: Cascade)
-  route     Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  vehicles  QueueVehicle[]
-  trips     Trip[]
+  id               String         @id @default(cuid())
+  rankId           String
+  routeId          String         @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  createdBy        String
+  updatedBy        String?
+  marshalId        String
+  departedVehicles Json[]
+  rank             Rank           @relation(fields: [rankId], references: [id], onDelete: Cascade)
+  route            Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicles         QueueVehicle[]
+  trips            Trip[]
 }
 
 model QueueVehicle {
@@ -256,8 +260,8 @@ model Trip {
   id            String      @id @default(cuid())
   routeId       String
   vehicleId     String
-  departureTime     DateTime?   
-  arrivalTime       DateTime?
+  departureTime DateTime?
+  arrivalTime   DateTime?
   duration      String?
   type          TripType
   status        TripStatus  @default(INITIATED)
@@ -275,7 +279,7 @@ model Trip {
 
 model Manifest {
   id            String      @id @default(cuid())
-  tripId       String      @unique
+  tripId        String      @unique
   associationId String
   createdAt     DateTime    @default(now())
   createdBy     String
@@ -285,23 +289,23 @@ model Manifest {
 }
 
 model Passenger {
-  id            String      @id @default(cuid())
-  firstName     String
-  lastName      String
-  phone         String      @unique
-  emergencyContact String   
-  email         String      @unique
-  address       String
-  manifestId    String
-  associationId String
-  createdAt     DateTime    @default(now())
-  createdBy     String
-  updatedAt     DateTime    @updatedAt
-  updatedBy     String?
-  SAID          BigInt      @unique
-  gender        String
-  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  manifest      Manifest    @relation(fields: [manifestId], references: [id], onDelete: Cascade)
+  id               String      @id @default(cuid())
+  firstName        String
+  lastName         String
+  phone            String      @unique
+  emergencyContact String
+  email            String      @unique
+  address          String
+  manifestId       String
+  associationId    String
+  createdAt        DateTime    @default(now())
+  createdBy        String
+  updatedAt        DateTime    @updatedAt
+  updatedBy        String?
+  SAID             BigInt      @unique
+  gender           String
+  association      Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  manifest         Manifest    @relation(fields: [manifestId], references: [id], onDelete: Cascade)
 }
 
 model NextOfKin {
@@ -309,8 +313,8 @@ model NextOfKin {
   address       String
   relationship  String
   names         String
-  email         String?     
-  phone         String      
+  email         String?
+  phone         String
   userId        String
   associationId String
   createdAt     DateTime    @default(now())
@@ -323,7 +327,7 @@ model NextOfKin {
 
 model Committee {
   id            String            @id @default(cuid())
-  name          String            
+  name          String
   associationId String
   association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   members       CommitteeMember[]
@@ -331,17 +335,17 @@ model Committee {
 }
 
 model CommitteeMember {
-  id          String    @id @default(cuid())
-  userId      String
-  role        String     
-  committeeId String
+  id            String    @id @default(cuid())
+  userId        String
+  role          String
+  committeeId   String
   associationId String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  createdBy   String
-  updatedBy   String?
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  committee   Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String
+  updatedBy     String?
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  committee     Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
 }
 
 model Meeting {
@@ -354,7 +358,7 @@ model Meeting {
   duration      String
   agenda        String
   minutes       Json[]
-  committeeId    String
+  committeeId   String
   associationId String
   association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   committe      Committee   @relation(fields: [committeeId], references: [id], onDelete: Cascade)
@@ -366,18 +370,18 @@ enum CommuniocationStatus {
 }
 
 model Communication {
-  id            String            @id @default(cuid())
+  id            String               @id @default(cuid())
   type          CommunicationType
-  updatedAt     DateTime          @updatedAt
+  updatedAt     DateTime             @updatedAt
   updatedBy     String?
   subject       String
   associationId String
   assignedTo    String?
   userId        String?
   status        CommuniocationStatus @default(OPEN)
-  createdAt     DateTime          @default(now())
-  association   Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  user          User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime             @default(now())
+  association   Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user          User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages      Message[]
 }
 
@@ -389,7 +393,6 @@ model Message {
   createdAt       DateTime      @default(now())
   communication   Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
 }
-
 
 model Fee {
   id                String         @id @default(cuid())
@@ -445,89 +448,84 @@ model EmploymentApplications {
   createdAt          DateTime                    @default(now())
   updatedAt          DateTime                    @updatedAt
   updatedBy          String?
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association        Association                 @relation(fields: [associationId], references: [id], onDelete: Cascade)
   status             EmploymentApplicationStatus @default(PENDING)
   employmentPosition EmploymentPosition          @relation(fields: [positionId], references: [id], onDelete: Cascade)
   employmentPost     EmploymentPost              @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
-
 model EmploymentPost {
-  id           String                   @id @default(cuid())
-  date         DateTime                 @default(now())
-  status       RecruitmentStatus        @default(OPEN)
-  createdAt    DateTime                 @default(now())
-  updatedAt    DateTime                 @updatedAt
-  createdBy    String
-  updatedBy    String?
-  description  String?
+  id            String                   @id @default(cuid())
+  date          DateTime                 @default(now())
+  status        RecruitmentStatus        @default(OPEN)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  createdBy     String
+  updatedBy     String?
+  description   String?
   associationId String
-  applications EmploymentApplications[]
+  applications  EmploymentApplications[]
   association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  position     EmploymentPosition?
+  position      EmploymentPosition?
 }
 
 model EmploymentPosition {
-  id               String                    @id @default(cuid())
+  id               String                   @id @default(cuid())
   position         String
   areaOfOperation  String
   responsibilities String[]
   expectations     String[]
-  employmentType  EmploymentType
+  employmentType   EmploymentType
   contractLength   String?
-  postId           String?                   @unique
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime                  @updatedAt
+  postId           String?                  @unique
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
   createdBy        String
   associationId    String
   updatedBy        String?
   status           EmploymentPositionStatus @default(VACANT)
   duties           String[]
-  employement      Employement[]
+  employement      Employment[]
   applications     EmploymentApplications[]
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  recruitment      EmploymentPost?           @relation(fields: [postId], references: [id])
-
+  association      Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  recruitment      EmploymentPost?          @relation(fields: [postId], references: [id])
 }
 
-
-
-model Employement {
+model Employment {
   id              String             @id @default(cuid())
-  referenceNumber Int             @unique 
+  referenceNumber String             @unique
   startDate       DateTime
   positionId      String
   employeeId      String?            @unique
-  associationId    String
-  status          EmploymentStatus
-  availability    Availability        @default(NOT_AVAILABLE)
+  associationId   String
+  status          EmploymentStatus   @default(ACTIVE)
+  availability    Availability       @default(AVAILABLE)
   user            User?              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   position        EmploymentPosition @relation(fields: [positionId], references: [id])
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
   shift           Shift?
+  contracts       Document[]
 }
 
 model Shift {
-  id           String      @id @default(cuid())
-  startTime    String
-  knockOffTime String
-  createdAt    DateTime    @default(now())
+  id           String     @id @default(cuid())
+  hours        String
+  createdAt    DateTime   @default(now())
   createdBy    String
-  updatedAt    DateTime    @updatedAt
+  updatedAt    DateTime   @updatedAt
   updatedBy    String?
-  employmentId String      @unique
-  offDays      String[]
+  employmentId String     @unique
   workingDays  String[]
-  employement  Employement @relation(fields: [employmentId], references: [id])
+  employement  Employment @relation(fields: [employmentId], references: [id])
 }
 
 model Document {
   id            String       @id @default(cuid())
+  name          String
   type          DocumentType
-  issueDate     DateTime?
-  expiryDate    DateTime?
   file          String
   ownerId       String?
+  employmentId  String?
   routeId       String?
   vehicleId     String?
   driverId      String?
@@ -536,18 +534,19 @@ model Document {
   createdBy     String
   updatedAt     DateTime     @updatedAt
   updatedBy     String?
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association   Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  employment    Employment?  @relation(fields: [employmentId], references: [id], onDelete: Cascade)
 }
 
 model Record {
-  id      String     @id @default(cuid())
-  type    RecordType
-  date    DateTime   @default(now())
-  staffId String
-  action  String
-  message String?
+  id            String      @id @default(cuid())
+  type          RecordType
+  date          DateTime    @default(now())
+  staffId       String
+  action        String
+  message       String?
   associationId String
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
@@ -692,6 +691,7 @@ enum DocumentType {
   ROUTE_LICENSE
   OWNER_LICENCE
   VEHICLE_DISK
+  CONTRACT
 }
 
 enum RecordType {
@@ -701,5 +701,6 @@ enum RecordType {
   ROUTES
   STAFF_HIRING
   STAFF_TERMINATION
+  DELETION
   QUEUE
 }

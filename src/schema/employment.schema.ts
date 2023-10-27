@@ -20,9 +20,22 @@ export const employmentSchema = object({
             invalid_type_error: "Invalid employeeId provided"
         }).cuid({message: "Invalid association id"}).optional(),
         status: string({
-            required_error: "status is required",
             invalid_type_error: "Invalid status provided"
-        }),
+        }).optional(),
+        availability: string({
+            invalid_type_error: "Invalid availability provided"
+        }).optional(),
+        
+       
+       
+    })
+})
+export const updateEmploymentSchema = object({
+    body: object({
+
+        status: string({
+            invalid_type_error: "Invalid status provided"
+        }).optional(),
         availability: string({
             invalid_type_error: "Invalid availability provided"
         }).optional(),

@@ -15,7 +15,7 @@ import { serializeObject } from "../../utils/serializer";
 const router = express.Router();
 dotenv.config();
 
-router.post("/register/userUser", validate(supperAccountSchema), async(req:Request, res:Response) => {
+router.post("/register/superUser", validate(supperAccountSchema), async(req:Request, res:Response) => {
     const {email, phone, password, firstName, lastName} = req.body
 
     const emailExist =  await duplicateEmail(email);
@@ -77,7 +77,7 @@ router.post("/login/superUser", validate(loginSchema), async(req:Request, res:Re
     const accessToken = jwt.sign({
         id: user.id,
         role: "supperAccount",
-    }, accessSecret, {expiresIn: "1d"} )
+    }, accessSecret, {expiresIn: "30d"} )
 
     const refreshToken = jwt.sign({
         id: user.id,
@@ -126,7 +126,7 @@ router.post("/login", validate(loginSchema), async(req:Request, res:Response) =>
     const accessToken = jwt.sign({
         id: user.id,
         role: "supperAccount",
-    }, accessSecret, {expiresIn: "1d"} )
+    }, accessSecret, {expiresIn: "30d"} )
 
     const newRefreshToken = jwt.sign({
         id: user.id,

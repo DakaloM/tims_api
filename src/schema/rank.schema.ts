@@ -17,14 +17,12 @@ export const rankSchema = object({
         associationId: string({
             required_error: "Required value AssociationId is not provided",
             invalid_type_error: "Invalid associationId",
-        }), 
+        }).cuid({message: "Invalid association Id"}), 
         createdBy: string({
             required_error: "Required userId in not provided",
             invalid_type_error:"Invalid value provided for the user Id",
-        }),
-        updatedBy: string({
-            invalid_type_error:"Invalid value provided for the user Id",
-        }).optional(),
+        }).cuid({message: "Invalid user Id"}),
+        
     })
 })
 export const updateRankSchema = object({
@@ -41,6 +39,6 @@ export const updateRankSchema = object({
         updatedBy: string({
             required_error: "'UpdatedBy' is required",
             invalid_type_error:"Invalid value provided for the user Id",
-        }),
+        }).cuid({message: "Invalid user Id"}),
     })
 })

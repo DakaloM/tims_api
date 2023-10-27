@@ -8,7 +8,7 @@ export const associationSchema = object({
         }),
         registrationNumber: string({
             required_error: "Registration number required",
-            invalid_type_error: "Invalid reqistration Number",
+            invalid_type_error: "Invalid registration Number",
         }),
         address: string({
             required_error: "Address required",
@@ -18,6 +18,10 @@ export const associationSchema = object({
             required_error: "Area of operation required",
             invalid_type_error: "invalid value provided for area of operation",
         }),
+        createdBy: string({
+            required_error: "specify who is creating this association",
+            invalid_type_error: "Invalid value provided for updated by field",
+        }).cuid({message: "Invalid  userId"}),
         updatedBy: string({
             invalid_type_error: "Invalid value provided for updated by field",
         }).optional(),

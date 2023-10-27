@@ -16,7 +16,10 @@ export const licenseSchema = object({
         associationId: string({
             required_error: "Required value AssociationId is not provided",
             invalid_type_error: "Invalid associationId",
-        }), 
+        }).cuid({message: "Invalid associationId"}), 
+        vehicleId: string({
+            invalid_type_error: "Invalid associationId",
+        }).cuid({message: "Invalid vehicleId"}).optional(), 
         issueDate: string({
             required_error: "Required field 'issue Date' in not provided",
             invalid_type_error:"Invalid issue date provided",
@@ -28,12 +31,12 @@ export const licenseSchema = object({
         userId: string({
             required_error: "UserId is required",
             invalid_type_error: "Invalid userId provided"
-        }).optional(),
+        }).cuid({message: "Invalid userId"}).optional(),
 
         routeId: string({
             required_error: "RouteId is required",
             invalid_type_error: "Invalid routeId provided"
-        }).optional(),
+        }).cuid({message: "Invalid routeId"}).optional(),
         status: string({
             invalid_type_error: "invalid license status provided"
         }).optional(),

@@ -6,7 +6,7 @@ export const createUserSchema = object({
         associationId: string({
             required_error: "AssociationId required",
             invalid_type_error: "Invalid associationId",
-        }),  
+        }).cuid({message: "Invalid associationId"}),  
         email: string({
             required_error: "Email is required",
             invalid_type_error: "Email must be a string",
@@ -57,7 +57,7 @@ export const createUserSchema = object({
         createdBy: string({
             required_error: "Created-by field required",
             invalid_type_error: "Invalid userId"
-        }),
+        }).cuid({message: "Invalid UserId"}),
         updatedBy: string({
             invalid_type_error: "Updated-by, not a valid field"
         }).optional(),

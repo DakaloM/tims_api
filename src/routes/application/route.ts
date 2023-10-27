@@ -4,6 +4,7 @@ import validate from "../../middleware/validateResource";
 import { verifyTokenAndAdmin, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
 import { applicationSchema, updateApplicationSchema } from "../../schema/application.schema";
 import { duplicateEmail } from "../../validation/application";
+import { validateUserId } from "../../validation/shared";
 
 
 
@@ -72,6 +73,11 @@ router.delete("/:id",verifyTokenAndSuperUser,async (req: Request, res: Response)
     const application = await db.employmentApplications.findUnique({
         where: {id: id}
     })
+    const userId = req.user.id
+    const user = await validateUserId(userId);
+    if(!user) {
+        return res.status(404).json({message: "UserId not found"})
+    }
 
     if(!application) {
         return res.status(404).json({message: "Application not found"})

@@ -5,6 +5,7 @@ import { verifyTokenAndAdmin } from "../../middleware/verifyToken";
 import { routeSchema, updateRouteSchema } from "../../schema/route.schema";
 import { duplicateRouteName } from "../../validation/route";
 import { findAssociation } from "../../validation/association";
+import { validateUserId } from "../../validation/shared";
 
 
 
@@ -12,8 +13,16 @@ const router = express.Router();
 
 // Create a route
 router.post("/",verifyTokenAndAdmin,validate(routeSchema),async (req: Request, res: Response) => {
-    const {name ,associationId,  ...others} = req.body
+    const {name ,associationId, createdBy,  ...others} = req.body
     const nameExist = await duplicateRouteName(name, associationId);
+    const association = await findAssociation(associationId);
+    const userId = await validateUserId(createdBy);
+    if(!userId) {
+        return res.status(404).json({message: "Invalid User Id provided"})
+    }
+    if(!association) {
+        return res.status(404).json({message: "Association id not found"})
+    }
     if(nameExist) {
         return res.status(409).json({message: "Route with the same name already exist"});
     }
@@ -34,13 +43,21 @@ router.post("/",verifyTokenAndAdmin,validate(routeSchema),async (req: Request, r
 
 // update route
 router.patch("/:id",verifyTokenAndAdmin,validate(updateRouteSchema),async (req: Request, res: Response) => {
+    const {updatedBy, ...others} = req.body
     const id = req.params.id
+
+    const userId = await validateUserId(updatedBy);
+    
 
     const route = await db.route.findUnique({
         where: {id: id}
     })
     if(!route) {
         return res.status(404).json({message: "Route not found"});
+    }
+
+    if(!userId) {
+        return res.status(404).json({message: "Invalid User Id provided"})
     }
 
     try {
@@ -50,7 +67,7 @@ router.patch("/:id",verifyTokenAndAdmin,validate(updateRouteSchema),async (req: 
         })
         return res.status(200).json({message: "Route updated successfully"});
     } catch (error) {
-        return res.status(500).json({message: "Failed to update route"});
+        return res.status(500).json({error, message: "Failed to update route"});
     }
 })
 // delete route

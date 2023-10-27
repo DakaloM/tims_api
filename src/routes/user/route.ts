@@ -15,6 +15,8 @@ import { UserRole, UserType, UserStatus } from "@prisma/client";
 import { bigint } from "zod";
 import { serializeObject } from "../../utils/serializer";
 import { isEmpty } from "../../utils/methods";
+import { validateUserId } from "../../validation/shared";
+import { findAssociation } from "../../validation/association";
 
 
 const router = express.Router();
@@ -22,7 +24,16 @@ dotenv.config();
 
 // add a user Account
 router.post("/",verifyTokenAndAdmin,validate(createUserSchema),async (req: Request, res: Response) => {
-    const { email, phone, SAID } = req.body;
+    const { email, associationId, phone, SAID, createdBy, ...others } = req.body;
+
+    const userId = await validateUserId(createdBy);
+    const association = await findAssociation(associationId);
+    if(!userId) {
+        return res.status(404).json({message: "Invalid User Id provided"})
+    }
+    if(!association) {
+        return res.status(404).json({message: "Association not found"})
+    }
 
     const emailExist = await duplicateEmail(email);
     if (emailExist) {
@@ -105,9 +116,9 @@ router.get("/",verifyTokenAndAdmin,async (req: Request, res: Response) => {
                         where:{type: UserType.STAFF}
                     })
                 
-                } else if(typeQuery === UserType.EXTERNAL) {
+                } else if(typeQuery === UserType.COMMUNITY) {
                     users = await db.user.findMany({
-                        where:{type: UserType.EXTERNAL}
+                        where:{type: UserType.COMMUNITY}
                     })
                 
                 } else if(typeQuery === UserType.MARSHAL) {
@@ -197,9 +208,9 @@ router.get("/association/:associationId",verifyTokenAndAdmin,async (req: Request
                         where:{type: UserType.STAFF, associationId: id}
                     })
                 
-                } else if(typeQuery === UserType.EXTERNAL) {
+                } else if(typeQuery === UserType.COMMUNITY) {
                     users = await db.user.findMany({
-                        where:{type: UserType.EXTERNAL, associationId: id}
+                        where:{type: UserType.COMMUNITY, associationId: id}
                     })
                 
                 } else if(typeQuery === UserType.MARSHAL) {

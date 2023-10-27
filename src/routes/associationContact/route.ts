@@ -2,10 +2,12 @@ import  db  from "../../config/connection";
 import express, { Response, Request } from "express"
 import validate from "../../middleware/validateResource";
 import dotenv from 'dotenv'
-import { verifyToken, verifyTokenAndAdmin, verifyTokenAndSuperAccount } from "../../middleware/verifyToken";
+import { verifyToken, verifyTokenAndAdmin, verifyTokenAndSuperAccount, verifyTokenAndSuperUser } from "../../middleware/verifyToken";
 import { associationContactSchema, updateAssociationContactSchema } from "../../schema/associationContact.schema";
 import { duplicateEmail, duplicateNames } from "../../validation/associationContact";
 import { serializeObject } from "../../utils/serializer";
+import { validateUserId } from "../../validation/shared";
+import { findAssociation } from "../../validation/association";
 
 
 
@@ -15,9 +17,14 @@ dotenv.config();
 // Add association contact
 router.post("/",verifyTokenAndAdmin, validate(associationContactSchema), async(req:Request, res:Response) => {
     
-    const {names, email, phone, ...others} = req.body
+    const {names, email, phone, associationId, ...others} = req.body
     const emailExist = await duplicateEmail(email);
     const namesExist = await duplicateNames(names);
+    const association = await findAssociation(associationId);
+
+    if(!association) {
+        return res.status(404).json({message: "Association not found"})
+    }
 
     if(emailExist) {
         return res.status(409).json({message: "Email already exist"})
@@ -42,14 +49,19 @@ router.post("/",verifyTokenAndAdmin, validate(associationContactSchema), async(r
 
 //edit Association contact
 router.patch("/:id",verifyTokenAndAdmin,validate(updateAssociationContactSchema) , async(req:Request, res:Response) => {
-
+    const {updatedBy, ...others} = req.body;
     const id = req.params.id
+    const userId = await validateUserId(updatedBy);
+    
     const contact = await db.associationContact.findUnique({
         where: {id: id}
     })
 
     if(!contact) {
         return res.status(404).json({message: "Contact not found"})
+    }
+    if(!userId) {
+        return res.status(404).json({message: "User not found"})
     }
 
     try {
@@ -119,12 +131,17 @@ router.get("/:id", async(req:Request, res:Response) => {
         return res.status(500).json({error, message: "failed to retrieve contact information"})
     }
 })
-// Delete association
-router.delete("/:id",verifyTokenAndSuperAccount, async(req:Request, res:Response) => {
+// Delete association contact
+router.delete("/:id",verifyTokenAndSuperUser, async(req:Request, res:Response) => {
     const id = req.params.id
     const contact = await db.associationContact.findUnique({
         where: {id: id}
     })
+    const userId = req.user.id
+    const user = await validateUserId(userId);
+    if(!user) {
+        return res.status(404).json({message: "UserId not found"})
+    }
 
     if(!contact) {
         return res.status(404).json({message: "Contact not found"})

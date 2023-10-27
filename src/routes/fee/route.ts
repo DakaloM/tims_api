@@ -5,9 +5,8 @@ import { verifyToken, verifyTokenAndAdmin, verifyTokenAndSuperUser } from "../..
 import { routeSchema, updateRouteSchema } from "../../schema/route.schema";
 import { duplicateRouteName } from "../../validation/route";
 import { findAssociation } from "../../validation/association";
-import { feeSchema } from "../../schema/application.schema";
 import { duplicateFee } from "../../validation/fee";
-import { updateFeeSchema } from "../../schema/fee.schema";
+import { feeSchema, updateFeeSchema } from "../../schema/fee.schema";
 
 
 
